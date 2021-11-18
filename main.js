@@ -7,11 +7,39 @@ const express = require('express');
 const Jimp = require('jimp');
 const imagemagickCli = require('imagemagick-cli');
 const imgur = require('imgur');
+const os  = require('os');
+const fs = require('fs')
 const app2 = express();
 
 app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
 
-
+app2.get("/uploadImage", (req, res) => {
+	dialog.showOpenDialog(null, {
+		properties: ['openFile'],
+		filters: [
+			{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }
+		]
+	  }).then(result => {
+		  if(!result.canceled) {
+			console.log(result.filePaths)
+			Jimp.read(result.filePaths[0], (err, image) => {
+				if (err) {
+					console.log(err);
+				} else {
+					image.getBase64(Jimp.AUTO, (err, ret) => {
+						//res.json({
+						//	"filename": "hello world",
+						//	"image": res
+						//  });
+						res.end();
+					})
+				}
+			});
+		  }
+	  }).catch(err => {
+		console.log(err)
+	  })
+})
 
 app2.post("/imgur", (req, res)  => {
 	imgur.setClientId('c9ff708b19a4996');
@@ -53,6 +81,8 @@ app2.post('/savecap', (req, res) => {
 	const options = {
 		defaultPath: app.getPath('desktop') + '/' + req.body.name,
 	}
+
+
 	
 	dialog.showSaveDialog(null, options).then((result) => {
 		if (!result.canceled) {

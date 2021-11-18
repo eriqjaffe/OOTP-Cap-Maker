@@ -297,7 +297,7 @@
 							<div id="uploadImageDiv">
 							<table style="width:100%;">
 								<tr>
-									<input type="file" id="uploadedImg" accept="image/*" style="display:none;"/>
+									<input type="file" id="uploadedImg" accept="image/*"/>
 									<td><center>
 										<input type="button" class="button" id="fakeImageButton" value="Upload An Image">
 									</td>
@@ -1447,8 +1447,16 @@
 		}
 		logoCanvas.renderAll();
 	})
+
+	$("#uploadedImg").on("click",function() {
+		$.ajax({
+			type: "POST",
+			url: "http://127.0.0.1:8080/uploadImage",
+			success: function(data) {}
+		});
+	})
 	
-	document.getElementById('uploadedImg').onchange = function handleImage(e) {
+	/* document.getElementById('uploadedImg').onchange = function handleImage(e) {
 		var reader = new FileReader();
 		reader.onload = function (event) {
 			var imgObj = new Image();
@@ -1493,7 +1501,7 @@
 		}
 		reader.readAsDataURL(e.target.files[0]);
 		$("#fileName").html($("#uploadedImg").val().split('\\').pop());
-	}
+	} */
 	
 	$("#textureSelect").on("change",function() {
 		if ($(this).val() != "") {
@@ -1507,7 +1515,50 @@
 	})
 	
 	$("#fakeImageButton").on("click",function() {
-		$("#uploadedImg").click();
+		$.ajax({
+			type: "GET",
+			url: "http://127.0.0.1:8080/uploadImage",
+			success: function(data) {
+				var imgObj = new Image();
+				imgObj.src = data;
+				imgObj.onload = function () {
+					// start fabricJS stuff
+					var image = new fabric.Image(imgObj);
+					image.set({
+						originX: 'center',
+						originY: 'center',
+						left: imLeft,
+						top: imTop,
+						perPixelTargetFind: true,
+						centeredScaling: true,
+						centeredRotation: true,
+						name: $("#uploadedImg").val().split('\\').pop(),
+						borderColor: 'red',
+						cornerColor: 'yellow',
+						cornerSize: 12,
+						transparentCorners: false
+					});
+					image.resizeFilters.push(new fabric.Image.filters.Resize({
+						resizeType: 'lanczos', // typo fixed
+						lanczosLobes: 2 // typo fixed
+					}));
+					image.on('object:modified',function() {
+						imLeft = image.get('left')
+						imTop = image.get('top');
+					})
+					var h = image.height;
+					var w = image.width;
+					//if ((h > 300) || (w > 300)) {
+					//	image.scale(0.5);
+					//}
+					logoCanvas.add(image);
+					image.sendBackwards();
+					
+					$("#fileName").html($("#uploadedImg").val().split('\\').pop());
+					// end fabricJS stuff
+				}
+			}
+		});
 	})
 	
 	$("#removeWhite").on("click",function(e) {
