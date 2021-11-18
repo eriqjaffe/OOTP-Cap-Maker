@@ -1,0 +1,26 @@
+{
+  "name": "capmaker",
+  "version": "1.0.0",
+  "description": "OOTP Cap Maker",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "author": "Eriq Jaffe",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "electron": "^16.0.0",
+    "express": "^4.17.1",
+    "gm": "^1.23.1",
+    "imagemagick-cli": "^0.5.0",
+    "imgur": "^1.0.2",
+    "jimp": "^0.16.1"
+  },
+  "packageManager": "yarn@3.1.0",
+  "devDependencies": {
+    "electron-builder": "^22.13.1"
+  }
+}
