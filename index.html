@@ -297,7 +297,7 @@
 							<div id="uploadImageDiv">
 							<table style="width:100%;">
 								<tr>
-									<input type="file" id="uploadedImg" accept="image/*"/>
+									<!--<input type="file" id="uploadedImg" accept="image/*" style="display:none;"/>-->
 									<td><center>
 										<input type="button" class="button" id="fakeImageButton" value="Upload An Image">
 									</td>
@@ -1532,7 +1532,7 @@
 						perPixelTargetFind: true,
 						centeredScaling: true,
 						centeredRotation: true,
-						name: $("#uploadedImg").val().split('\\').pop(),
+						name: makeid(10),
 						borderColor: 'red',
 						cornerColor: 'yellow',
 						cornerSize: 12,
@@ -1554,7 +1554,7 @@
 					logoCanvas.add(image);
 					image.sendBackwards();
 					
-					$("#fileName").html($("#uploadedImg").val().split('\\').pop());
+					//$("#fileName").html(makeid(10));
 					// end fabricJS stuff
 				}
 			}
@@ -2479,6 +2479,16 @@
 				break;
 			}
 		}
+	}
+
+	function makeid(length) {
+		var result           = '';
+		var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		var charactersLength = characters.length;
+		for ( var i = 0; i < length; i++ ) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+		return result;
 	}
 	
 	$(".markToggle").on("click",function() {

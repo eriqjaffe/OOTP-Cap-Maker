@@ -31,7 +31,7 @@ app2.get("/uploadImage", (req, res) => {
 						//	"filename": "hello world",
 						//	"image": res
 						//  });
-						res.end();
+						res.end(ret);
 					})
 				}
 			});
@@ -229,6 +229,8 @@ const port = 8080;
 app2.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
 
 function createWindow () {
   // Create the browser window.
