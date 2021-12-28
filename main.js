@@ -88,7 +88,7 @@ const template = [
 	{
 		label: 'View project on GitHub',
 		click: async () => {
-		await shell.openExternal('https://github.com/eriqjaffe/capmaker')
+		await shell.openExternal('https://github.com/eriqjaffe/OOTP-Cap-Maker')
 		}
 	}
 	]
