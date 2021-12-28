@@ -16,6 +16,7 @@
 	<script type="text/javascript" src="./scripts/jquery.fileDownload.js"></script>
 	<script type="text/javascript" src="./scripts/jquery.html5storage.min.js"></script>
 	<script type="text/javascript" src="./scripts/spin.min.js"></script>
+	<script type="text/javascript" src="./scripts/fontfaceobserver.js"></script>
 	<link href='./scripts/capmaker.css' rel='stylesheet' type='text/css'>
 	<link href='./scripts/spectrum.css' rel='stylesheet' type='text/css'>
 	<link href='./scripts/menu.css' rel='stylesheet' type='text/css'>
@@ -64,6 +65,11 @@
 					<canvas id="above" width="512" height="512" style="position:absolute; top:10; left:10; z-index:2;"></canvas>
 					<!--<canvas id="guides" width="512" height="512" style="position:absolute; top:10; left:10; z-index:3; display:none;"></canvas>-->
 					<div id="tipContainer" style="height:60px; padding-top:5px; font-weight:bold;"></div>
+					<div id="donateContainer" style="width:512px; height: 50px; text-align:right; padding-top:10px">
+						<a href="https://www.paypal.com/donate?business=UTTZRPAMBFCWA&no_recurring=1&currency_code=USD" target="_blank">
+							<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button">
+						</a>
+					</div>
 				</div>
 			</div>
 			<div class="col span_1_of_2" style="float:right; max-height:500px;">
@@ -542,6 +548,11 @@
 										</select>
 									</td>
 								</tr>
+								<tr><td colspan="3" align="center">
+									<input id="customFont" type="file" name="customFont" accept=".ttf, .otf" style="display:none;" />
+									<input type="button" class="button textOption" id="fakeFontButton" value="Choose a Local Font..." />
+									<input type="button" class="button textOption" id="uploadTheFont" value="Upload Font" style="display:none;" />
+								</td></tr>
 							</table>
 						</div>
 						<div class="accord-header inactive-header">Options</div>
@@ -656,6 +667,9 @@
 			$(this).prop("disabled",true);
 		})
 		$("#fontTypeCombo").prop("disabled",true);
+		$(".textOption").each(function() {
+			$(this).prop( "disabled", true );
+		})
 		$(":checkbox").each(function(e) {
 			if ($(this).is(':checked')) {
 				state = true;
@@ -2218,8 +2232,14 @@
 		})
 		if (state == true) {
 			$("#fontTypeCombo").prop("disabled",false);
+			$(".textOption").each(function() {
+				$(this).prop( "disabled", false );
+			})
 		} else {
 			$("#fontTypeCombo").prop("disabled",true);
+			$(".textOption").each(function() {
+				$(this).prop( "disabled", true );
+			})
 		}
 
 		state = false;
@@ -2560,5 +2580,62 @@
 			logoCanvas.renderAll();
 		})
 	}
+
+	$("#fakeFontButton").on("click", function(e) {
+		e.preventDefault;
+		$("#uploadTheFont").click();
+	})
+
+	$("#uploadTheFont").on("click", function(e) {
+		//$("#fontTypeCombo").removeClass().addClass('alegreya');
+		$.ajax({
+			type: "GET",
+			url: "http://127.0.0.1:8080/customFont",
+			success: function(data) {
+				//console.log(data)
+				$("head").prepend("<style>@font-face {\n   font-family: '"+data.familyName+"';\n   src: url('./fonts/"+data.fontData+"') format('truetype');\n}\n."+data.familyName+" { font-family: '"+data.familyName+"'; font-size: 1.1em;}\n</style>");
+				var style = data.familyName;
+				console.log(style)
+				var font_family = $("."+style).css("font-family");
+				console.log(font_family)
+				var objects = logoCanvas.getObjects("group");
+				var myfont = new FontFaceObserver(data.familyName)
+				myfont.load()
+					.then(function() {
+					// when font is loaded, use it.
+							for (x in objects) {
+							if (objects[x].id == "wordmark") {
+								var tmp = objects[x].getObjects();
+								for (i in tmp) {
+									//console.log(tmp[i].fontFamily)
+									tmp[i].fontFamily = data.familyName;
+									//console.log(tmp[i].fontFamily)
+								}
+							}
+						}
+						logoCanvas.renderAll();
+						var optgroup = $("<optgroup class='"+data.familyName+"'>");
+						optgroup.append("<option value='"+data.familyName+"'>"+data.fontName+"</option>")
+						$("#fontTypeCombo").append(optgroup)
+						$("#fontTypeCombo").children().remove("optgroup[class='alegreya']");
+						//optgroup = $("<optgroup class='alegreya'>");
+						//optgroup.append("<option value='custom'>Custom Font</option>")
+						//$("#fontTypeCombo").append(optgroup)
+						$("#fontTypeCombo").val(data.familyName)
+						$("#fontTypeCombo").removeClass().addClass(data.familyName);
+						$("#fontTypeCombo").change()
+					}).catch(function(e) {
+						console.log(e)
+						alert('font loading failed ' + data.familyName);
+					});
+				
+				//wordmarkText.fontFamily = font_family;
+				//wordmarkTextStroke1.fontFamily = font_family;
+				//wordmarkTextStroke2.fontFamily = font_family;
+				//logoCanvas.renderAll();
+				//$(this).removeClass().addClass(style);
+			}
+		})
+	})
 </script>
 </html>

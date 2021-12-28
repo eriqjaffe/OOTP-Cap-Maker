@@ -16,11 +16,13 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "electron-build": "^0.0.3",
     "express": "^4.17.1",
     "gm": "^1.23.1",
     "imagemagick-cli": "^0.5.0",
     "imgur": "^1.0.2",
-    "jimp": "^0.16.1"
+    "jimp": "^0.16.1",
+    "ttfinfo": "^0.2.0"
   },
   "packageManager": "yarn@3.1.0",
   "devDependencies": {
