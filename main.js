@@ -384,7 +384,7 @@ function createWindow () {
     height: 760,
 	icon: (__dirname + '/images/ballcap.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      //preload: path.join(__dirname, 'preload.js')
     }
   })
 
