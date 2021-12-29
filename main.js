@@ -209,9 +209,9 @@ app2.post("/removeBorder", (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			image.write("temp.png");
-			imagemagickCli.exec('magick convert -trim -fuzz '+fuzz+'% temp.png temp.png').then(({ stdout, stderr }) => {
-				Jimp.read("temp.png", (err, image) => {
+			image.write(tempDir + '/temp.png');
+			imagemagickCli.exec('magick convert -trim -fuzz '+fuzz+'% '+tempDir+'/temp.png '+tempDir+'/temp.png').then(({ stdout, stderr }) => {
+				Jimp.read(tempDir + '/temp.png', (err, image) => {
 					if (err) {
 						console.log(err);
 					} else {
@@ -238,14 +238,14 @@ app2.post("/replaceColor", (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			image.write("temp.png");
+			image.write(tempDir + '/temp.png');
 			if (action == "replaceColorRange") {
-				cmdString = 'magick convert temp.png -fuzz '+fuzz+'% -fill '+newcolor+' -draw "color '+x+','+y+' floodfill" temp.png';		
+				cmdString = 'magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -fill '+newcolor+' -draw "color '+x+','+y+' floodfill" '+tempDir+'/temp.png';		
 			} else {
-				cmdString = 'magick convert temp.png -fuzz 50% -fill '+newcolor+' -opaque '+color+' temp.png';	
+				cmdString = 'magick convert '+tempDir+'/temp.png -fuzz 50% -fill '+newcolor+' -opaque '+color+' '+tempDir+'/temp.png';	
 			}
 			imagemagickCli.exec(cmdString).then(({ stdout, stderr }) => {
-				Jimp.read("temp.png", (err, image) => {
+				Jimp.read(tempDir + '/temp.png', (err, image) => {
 					if (err) {
 						console.log(err);
 					} else {
@@ -268,9 +268,9 @@ app2.post("/removeColorRange", (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			image.write("temp.png", (err) => {
-				imagemagickCli.exec('magick convert temp.png -fuzz '+fuzz+'% -fill none -draw "color '+x+','+y+' floodfill" temp.png').then(({ stdout, stderr }) => {
-					Jimp.read("temp.png", (err, image) => {
+			image.write(tempDir + '/temp.png', (err) => {
+				imagemagickCli.exec('magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -fill none -draw "color '+x+','+y+' floodfill" '+tempDir+'/temp.png').then(({ stdout, stderr }) => {
+					Jimp.read(tempDir + '/temp.png', (err, image) => {
 						if (err) {
 							console.log(err);
 						} else {
@@ -295,11 +295,11 @@ app2.post('/removeAllColor', (req, res) => {
 		if (err) {
 			console.log(err);		
 		} else {
-			image.write("temp.png", (err) => {
-				var cmdString = 'magick convert temp.png -fuzz '+fuzz+'% -transparent '+color+' temp.png';
+			image.write(tempDir + '/temp.png', (err) => {
+				var cmdString = 'magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -transparent '+color+' '+tempDir+'/temp.png';
 				console.log(cmdString);
 				imagemagickCli.exec(cmdString).then(({ stdout, stderr }) => {
-					Jimp.read("temp.png", (err, image) => {
+					Jimp.read(tempDir + '/temp.png', (err, image) => {
 						if (err) {
 							console.log(err);
 						} else {
