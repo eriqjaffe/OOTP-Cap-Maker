@@ -178,7 +178,7 @@ app2.post('/savecap', (req, res) => {
 			if(err) {
 				console.log(err);
 			} else {
-				var watermark = fs.readFileSync(__dirname + "\\images\\cm_watermark.png", {encoding: 'base64'});
+				var watermark = fs.readFileSync(__dirname + "/images/cm_watermark.png", {encoding: 'base64'});
 				var buffer = Buffer.from(watermark, 'base64');
 					Jimp.read(buffer, (err, sec_img) => {
 						if(err) {
