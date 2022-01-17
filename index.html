@@ -1330,7 +1330,7 @@
 		exportCtx.clearRect(0,0,512,512);
 		exportCtx.drawImage(composite,0,0);
 		exportCtx.drawImage(can4,0,0);
-		new CanvasSaver('http://127.0.0.1:8080/savecap').savePNG(document.getElementById("final"), fileName, "cap");
+		new CanvasSaver('http://127.0.0.1:8081/savecap').savePNG(document.getElementById("final"), fileName, "cap");
 		logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
 	})
 	
@@ -1465,7 +1465,7 @@
 	$("#uploadedImg").on("click",function() {
 		$.ajax({
 			type: "POST",
-			url: "http://127.0.0.1:8080/uploadImage",
+			url: "http://127.0.0.1:8081/uploadImage",
 			success: function(data) {}
 		});
 	})
@@ -1531,7 +1531,7 @@
 	$("#fakeImageButton").on("click",function() {
 		$.ajax({
 			type: "GET",
-			url: "http://127.0.0.1:8080/uploadImage",
+			url: "http://127.0.0.1:8081/uploadImage",
 			success: function(data) {
 				var imgObj = new Image();
 				imgObj.src = data;
@@ -1806,7 +1806,7 @@
 				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();			
 				$.ajax({
 					type: "POST",
-					url: "http://127.0.0.1:8080/removeColorRange",
+					url: "http://127.0.0.1:8081/removeColorRange",
 					data: {imgdata: theImage, x: x, y: y, color: color, action: action, fuzz: fuzz, filename: pictureName},
 					success: function(data) {
 						var imgObj = new Image();
@@ -1872,7 +1872,7 @@
 				$.ajax({
 					type: "POST",
 					//url: "./scripts/changecolor.php",
-					url: "http://127.0.0.1:8080/removeAllColor",
+					url: "http://127.0.0.1:8081/removeAllColor",
 					data: {imgdata: theImage, x: x, y: y, color: color, action: action, fuzz: fuzz, filename: pictureName},
 					success: function(data) {
 						var imgObj = new Image();
@@ -1950,7 +1950,7 @@
 				
 				$.ajax({
 					type: "POST",
-					url: "http://127.0.0.1:8080/replaceColor",
+					url: "http://127.0.0.1:8081/replaceColor",
 					data: {imgdata: theImage, x: x, y: y, action: action, color: color, newcolor: newcolor, fuzz: fuzz, filename: pictureName},
 					success: function(data) {
 					//$("#testImage").attr("src","data:image/png;base64,"+data);
@@ -2008,7 +2008,7 @@
 				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();
 				$.ajax({
 					type: "POST",
-					url: "http://127.0.0.1:8080/removeBorder",
+					url: "http://127.0.0.1:8081/removeBorder",
 					data: {imgdata: theImage, x: "1", y: "1", action: "removeBorder", color: "null", newcolor: "null", fuzz: fuzz, filename: pictureName},
 					success: function(data) {
 						var imgObj = new Image();
@@ -2476,7 +2476,7 @@
 		logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
 		
 		$.ajax({
-			url : 'http://127.0.0.1:8080/imgur',
+			url : 'http://127.0.0.1:8081/imgur',
 			type : 'POST',
 			data : {imgdata:finalImage,watermark:'cm_watermark.png'},
 			dataType: "json",
@@ -2590,7 +2590,7 @@
 		//$("#fontTypeCombo").removeClass().addClass('alegreya');
 		$.ajax({
 			type: "GET",
-			url: "http://127.0.0.1:8080/customFont",
+			url: "http://127.0.0.1:8081/customFont",
 			success: function(data) {
 				//console.log(data)
 				$("head").prepend("<style>@font-face {\n   font-family: '"+data.familyName+"';\n   src: url('"+data.fontData+"') format('truetype');\n}\n."+data.familyName+" { font-family: '"+data.familyName+"'; font-size: 1.1em;}\n</style>");
