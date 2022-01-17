@@ -1,6 +1,6 @@
 {
   "name": "capmaker",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "OOTP Cap Maker",
   "main": "main.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "electron-builder": "^22.13.1"
   },
   "build": {
-    "appId": "com.hypermodules.testapp",
+    "appId": "com.ootputilities.capmakermul",
     "mac": {
       "category": "public.app-category.utilities",
       "target": [
@@ -42,8 +42,14 @@
       "artifactName": "${productName}_${version}_portable.${ext}"
     },
     "nsis": {
+      "oneClick": false,
       "perMachine": true,
-      "artifactName": "${productName}_${version}_setup.${ext}"
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "artifactName": "${productName}_${version}_setup.${ext}",
+      "menuCategory": "OOTP Utilities",
+      "shortcutName": "OOTP Cap Maker",
+      "include": "build/installer.nsh"
     },
     "linux": {
       "target": [
