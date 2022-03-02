@@ -6,7 +6,7 @@ const path = require('path')
 const express = require('express');
 const Jimp = require('jimp');
 const imagemagickCli = require('imagemagick-cli');
-const imgur = require('imgur');
+//const imgur = require('imgur');
 const os = require('os');
 const tempDir = os.tmpdir()
 const fs = require('fs')
@@ -98,6 +98,10 @@ const template = [
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
 
+const server = app2.listen(0, () => {
+	console.log(`Server running on port ${server.address().port}`);
+});
+
 app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
 
 app2.get("/uploadImage", (req, res) => {
@@ -129,7 +133,7 @@ app2.get("/uploadImage", (req, res) => {
 	  })
 })
 
-app2.post("/imgur", (req, res)  => {
+/* app2.post("/imgur", (req, res)  => {
 	imgur.setClientId('c9ff708b19a4996');
 	imgur.setAPIUrl('https://api.imgur.com/3/');
 	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
@@ -161,7 +165,7 @@ app2.post("/imgur", (req, res)  => {
 					})
 				}
 			});
-})
+}) */
 
 app2.post('/savecap', (req, res) => {
 	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
@@ -371,12 +375,6 @@ function getExtension(filename) {
 
 const port = 8081;
 
-app2.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
-
-
-
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -389,7 +387,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadURL(`file://${__dirname}/index.html?port=${server.address().port}`);
 
   mainWindow.webContents.on('new-window', function(e, url) {
 	e.preventDefault();

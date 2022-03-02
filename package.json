@@ -1,6 +1,7 @@
 {
   "name": "capmaker",
-  "version": "0.2.1",
+  "productName": "OOTP Cap Maker",
+  "version": "0.2.2",
   "description": "OOTP Cap Maker",
   "main": "main.js",
   "scripts": {
@@ -11,23 +12,21 @@
   "author": {
     "name": "Eriq Jaffe",
     "email": "eriqjaffe@gmail.com",
-    "url": "https://github.com/eriqjaffe/capmaker"
+    "url": "https://github.com/eriqjaffe/OOTP-Cap-Maker"
   },
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.19.2",
     "electron-build": "^0.0.3",
-    "express": "^4.17.1",
-    "gm": "^1.23.1",
+    "express": "^4.17.3",
     "imagemagick-cli": "^0.5.0",
-    "imgur": "^1.0.2",
     "jimp": "^0.16.1",
     "ttfinfo": "^0.2.0"
   },
   "packageManager": "yarn@3.1.0",
   "devDependencies": {
-    "electron": "^16.0.0",
-    "electron-builder": "^22.13.1"
+    "electron": "^17.1.0",
+    "electron-builder": "^22.14.13"
   },
   "build": {
     "appId": "com.ootputilities.capmakermul",
@@ -38,6 +37,12 @@
         "dmg"
       ]
     },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
     "portable": {
       "artifactName": "${productName}_${version}_portable.${ext}"
     },
@@ -46,10 +51,13 @@
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
-      "artifactName": "${productName}_${version}_setup.${ext}",
+      "artifactName": "${productName} ${version} setup.${ext}",
       "menuCategory": "OOTP Utilities",
-      "shortcutName": "OOTP Cap Maker",
-      "include": "build/installer.nsh"
+      "shortcutName": "${productName}",
+      "include": "build/installer.nsh",
+      "uninstallDisplayName": "${productName} ${version}",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
     },
     "linux": {
       "target": [
