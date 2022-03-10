@@ -14,6 +14,7 @@ const app2 = express();
 const ttfInfo = require('ttfinfo');
 const url = require('url');
 const isMac = process.platform === 'darwin'
+const archiver = require('archiver')
 
 
 const template = [
@@ -168,42 +169,82 @@ app2.get("/uploadImage", (req, res) => {
 }) */
 
 app2.post('/savecap', (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+	const buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+	const json = Buffer.from(req.body.canvas, 'utf-8')
 
-	const options = {
-		defaultPath: app.getPath('desktop') + '/' + req.body.name,
-	}
+	const output = fs.createWriteStream(tempDir + '/'+req.body.name+'.zip');
 
-
-	
-	dialog.showSaveDialog(null, options).then((result) => {
-		if (!result.canceled) {
-			Jimp.read(buffer, (err, fir_img) => {
-			if(err) {
-				console.log(err);
-			} else {
-				var watermark = fs.readFileSync(__dirname + "/images/cm_watermark.png", {encoding: 'base64'});
-				var buffer = Buffer.from(watermark, 'base64');
-					Jimp.read(buffer, (err, sec_img) => {
-						if(err) {
-							console.log(err);
-						} else {
-							fir_img.composite(sec_img, 0, 0);
-							fir_img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-								const finalImage = Buffer.from(buffer).toString('base64');
-								fs.writeFile(result.filePath, finalImage, 'base64', function(err) {
-									console.log(err);
-								});
-							  });
-							
-						}
-					})
-				}
-			});
-		} 
-	}).catch((err) => {
-		console.log(err);
+	output.on('close', function() {
+		var data = fs.readFileSync(tempDir + '/'+req.body.name+'.zip');
+		var saveOptions = {
+		  defaultPath: app.getPath('downloads') + '/' + req.body.name+'.zip',
+		}
+		dialog.showSaveDialog(null, saveOptions).then((result) => { 
+		  if (!result.canceled) {
+			fs.writeFile(result.filePath, data, function(err) {
+			  if (err) {
+				res.end("success")
+				fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
+				  if (err) {
+					console.error(err)
+					return
+				  }
+				})
+				res.end("success")
+			  } else {
+				fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
+				  if (err) {
+					console.error(err)
+					return
+				  }
+				})
+				res.end("success")
+			  };
+			})
+		  } else {
+			fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
+			  if (err) {
+				console.error(err)
+				return
+			  }
+			})
+			res.end("success");
+		  }
+		})
 	});
+
+	const archive = archiver('zip', {
+		lib: { level: 9 } // Sets the compression level.
+	});
+		
+	archive.on('error', function(err) {
+		throw err;
+	});
+
+	archive.pipe(output)
+	
+	Jimp.read(buffer, (err, fir_img) => {
+		if(err) {
+			console.log(err);
+		} else {
+			var watermark = fs.readFileSync(__dirname + "/images/cm_watermark.png", {encoding: 'base64'});
+			var buffer = Buffer.from(watermark, 'base64');
+				Jimp.read(buffer, (err, sec_img) => {
+					if(err) {
+						console.log(err);
+					} else {
+						fir_img.composite(sec_img, 0, 0);
+						fir_img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+							const finalImage = Buffer.from(buffer);
+							archive.append(finalImage, {name: req.body.name+".png"})
+							archive.append(json, {name: req.body.name+".cap"})
+							archive.finalize()
+							});
+						
+					}
+				})
+			}
+		}); 
 });
 
 app2.post("/removeBorder", (req, res) => {
@@ -395,7 +436,8 @@ function createWindow () {
   });
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  	mainWindow.maximize()
+   	mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished

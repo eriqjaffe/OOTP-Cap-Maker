@@ -1295,7 +1295,13 @@
 	})
 	
 	$("#save").on("click", function() {
-		console.log("hello world");
+
+		const jsonExport = {
+			'below': below.toJSON(),
+			'texture': textureFJS.toJSON(),
+			'logo': logoCanvas.toJSON()
+		}
+
 		var startYear = parseInt($("#startYear").val());
 		var endYear = parseInt($("#endYear").val())
 		var yearRange = "";
@@ -1333,7 +1339,17 @@
 		exportCtx.clearRect(0,0,512,512);
 		exportCtx.drawImage(composite,0,0);
 		exportCtx.drawImage(can4,0,0);
-		new CanvasSaver('http://127.0.0.1:'+port+'/savecap').savePNG(document.getElementById("final"), fileName, "cap");
+		
+		$.ajax({
+			type: "POST",
+			url: "http://127.0.0.1:"+port+"/savecap",
+			data: {imgdata:finalCanvas.toDataURL(),name:fileName,canvas:JSON.stringify(jsonExport,null,2)},
+			success: function(result) {
+
+			}
+		})
+		//var foo = new CanvasSaver('http://127.0.0.1:'+port+'/savecap').savePNG(document.getElementById("final"), fileName, "cap");
+
 		logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
 	})
 	
@@ -2281,94 +2297,6 @@
 		
 		image.src = url;
 	}
-	
-	$("#saveCap").on("click",function(e) {
-		below.renderAll();
-		textureFJS.deactivateAll().renderAll();
-		logoCanvas.deactivateAll().renderAll();
-		
-		$("#frmBelow").val(JSON.stringify(below.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners'])));
-		$("#frmTexture").val(JSON.stringify(textureFJS.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners'])));
-		$("#frmAbove").val(JSON.stringify(logoCanvas.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners'])));
-		
-		var information = {teamName:$("#teamName").val(),capType:$("#capType").val(),startYear:$("#startYear").val(),endYear:$("#endYear").val(),texture:$("#textureSelect").val(),capText:$("#capText").val(),capText2:$("#capText2").val(),fontTypeCombo:$("#fontTypeCombo").val()};
-		
-		var canvases = {
-			below:JSON.stringify(below.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners'])),
-			texture:textureFJS.toDataURL(),
-			above:JSON.stringify(logoCanvas.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners']))};
-		
-		logoCanvas.setOverlayImage(null, logoCanvas.renderAll.bind(logoCanvas));
-		logoCanvas.deactivateAll().renderAll();
-		
-		var finalCanvas = document.getElementById('final');
-		var exportCtx = finalCanvas.getContext('2d');
-		exportCtx.clearRect(0,0,512,512);
-		exportCtx.drawImage(composite,0,0);
-		exportCtx.drawImage(can4,0,0);
-		
-		var finalImage = finalCanvas.toDataURL();
-		
-		logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
-		
-		var selectors = [];
-		var checkboxes = [];
-		
-		$(".selector").each(function(e) {
-			selectors.push({
-				spectrum: $(this).attr("id"),
-				element: $(this).data("element"),
-				canvas: $(this).data("canvas"),
-				color: $(this).spectrum("get").toHexString()
-			})
-		})
-		
-		$(":checkbox").each(function(e) {
-			checkboxes.push({
-				element: $(this).data("id"),
-				checked: $(this).is(':checked')
-			})
-		})
-		
-		var data = {'information':information,'elements':checkboxes,'colors':selectors,'canvases':canvases,'image':finalImage,};
-		
-		var startYear = parseInt($("#startYear").val());
-		var endYear = parseInt($("#endYear").val())
-		var yearRange = "";
-		var teamName = "";
-		if (startYear > endYear && endYear > 0) {
-			alert("The start year has to be before or equal to the end year!");
-			return false;
-		}
-		if (startYear == endYear && startYear > 0) {
-			yearRange = $("#startYear").val();
-		} else if (startYear == 0 && endYear > 0) {
-			yearRange = $("#endYear").val();
-		} else if (startYear > 0 && endYear == 0) {
-			yearRange = $("#startYear").val();
-		} else if (startYear > 0 && endYear > 0) {
-			yearRange = $("#startYear").val()+"-"+$("#endYear").val()
-		} else {
-			yearRange = ""
-		}
-		if (yearRange.length > 0) {
-			yearRange = "_"+yearRange;
-		}
-		if ($("#teamName").val().length == 0) {
-			teamName = "Unknown_Team";
-		} else {
-			teamName = $("#teamName").val().replace(/[|&;$%@"<>()+,]/g, "");
-		}
-		teamName = teamName.replace(/([^a-z0-9]+)/i, "_");
-		
-		$.fileDownload("./scripts/savecap.php", {
-			httpMethod: 'POST',
-			data: $.param(data),
-			failCallback: function (responseHtml, url) {
-				alert(responseHtml);
-			}
-		})
-	})
 
 	$("#loadCap").on("click",function(e) {
 		$("#loadCanvas").click();
