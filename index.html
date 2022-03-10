@@ -578,10 +578,10 @@
 					<div style="text-align:center; margin-top:5px;">
 						<input type="file" id="loadCanvas" accept=".cap" style="display:none;"/>
 						<input type="button" class="button" id="straightenObject" value="Reset Object Rotation" style="display:none;">
-						<!--<input type="button" class="button" id="saveCap" value="Save Ballcap">
-						<input type="button" class="button" id="loadCap" value="Load Ballcap">-->
+						<!--<input type="button" class="button" id="saveCap" value="Save Ballcap">-->
 						<input type="button" class="button" id="save" value="Save Ballcap">
-						<input type="button" class="button" id="imgur" value="Upload To Imgur" style="display:none;">
+						<input type="button" class="button" id="loadCap" value="Load Ballcap">
+						<!--<input type="button" class="button" id="imgur" value="Upload To Imgur" style="display:none;">-->
 						<input type="button" class="button" id="toggleGuides" value="Hide Guides">
 						<input type="button" class="button" id="clearTexture" value="Clear Custom Texture" style="display:none;">
 						<input type="button" class="button" id="aboutCapmaker" value="About Cap Maker">
@@ -1297,9 +1297,9 @@
 	$("#save").on("click", function() {
 
 		const jsonExport = {
-			'below': below.toJSON(),
-			'texture': textureFJS.toJSON(),
-			'logo': logoCanvas.toJSON()
+			'below': below.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners']),
+			'texture': textureFJS.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners']),
+			'logo': logoCanvas.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners'])
 		}
 
 		var startYear = parseInt($("#startYear").val());
@@ -2302,94 +2302,175 @@
 		$("#loadCanvas").click();
 	})
 
-	document.getElementById('loadCanvas').onchange = function uploadFile(e) {
-		$("#overlay").css("display","inline-block");
-		
-		if (this.files[0].name.substr(this.files[0].name.length - 4) != ".cap") {
-		 	alert("This does not appaer to be a valid cap file.");
-		 	$("#overlay").css("display","none");
-		 	return false;
-		}
-		
-		var formData = new FormData();
-		formData.append('file', this.files[0]);
-
-		$.ajax({
-			url : './scripts/loadcap.php',
-			type : 'POST',
-			data : formData,
-			processData: false,
-			contentType: false,
-			success : function(data) {
-				if (data == "Invalid file uploaded!") {
-                    alert("Error: "+data);
-					$("#overlay").css("display","none");
-                    return false;
-                }
-	       		var array = JSON.parse(data);
-				below.loadFromJSON(JSON.parse(array[0]),below.renderAll.bind(below));
-				var xml = array[3];
-				if ($(xml).find('Texture').text() == "Custom") {
-					$("#customTexture").val(array[1]);
-					$("#textureSelect").val(array[1]);
-					$("#textureSelect").change();
-				} else {
-					$("#textureSelect").val($(xml).find('Texture').text());
-					$("#textureSelect").change();
-				}
-				logoCanvas.loadFromJSON(array[2], logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
-					if (object.selectable == true) {
-						object.set({
-							borderColor: 'red',
-							cornerColor: 'yellow',
-							cornerSize: 12,
-							transparentCorners: false
-						})
-					}
-					logoCanvas.add(object);
-				});
-				reRenderBG();
-				
-	           	$("#teamName").val($(xml).find('TeamName').text());
-			  	$("#capType").val($(xml).find('CapType').text());
-			  	$("#startYear").val($(xml).find('Start').text());
-			  	$("#endYear").val($(xml).find('End').text());
-			  	$("#capText").val($(xml).find('CapText').text());
-			  	$("#capText2").val($(xml).find('CapText2').text());
-			  	$("#fontTypeCombo").val($(xml).find('FontTypeCombo').text());
-				$("#fontTypeCombo").removeClass().addClass($(xml).find('FontTypeCombo').text());
-				
-				$(":checkbox").each(function(e) {
-					if ($(xml).find("CapElements "+$(this).data("id")).text() == "true") {
-						$(this).prop('checked',true);
-						$(this).parent().parent().find(".selector").each(function(e) {
-							$(this).spectrum('enable');
-						})
-						if ($(this).data("checkbox")) {
-							$("."+$(this).data("checkbox")).each(function(e) {
-								$(this).prop("disabled",false);
-							})
-						}
-					} else {
-						$(this).prop('checked',false);
-						$(this).parent().parent().find(".selector").each(function(e) {
-							$(this).spectrum('disable');
-						})
-						if ($(this).data("checkbox")) {
-							$("."+$(this).data("checkbox")).each(function(e) {
-								$(this).prop("disabled",true);
-							})
-						}
-					}
-				})
-				
-				$(".selector").each(function(e) {
-					$(this).spectrum("set",$(xml).find("Colors "+$(this).attr("id")).text());
-				})
-				$("#overlay").css("display","none");
+	$("#loadCanvas").on("change",function(e) {
+		var fileReader = new FileReader();
+		fileReader.onload = function () {
+			const data = JSON.parse(fileReader.result)
+			console.log(data.below)
+			textureFJS.clear();
+			//logoCanvas.clear();
+			below.clear();
+			console.log("below:")
+			below.loadFromJSON(data.below, below.renderAll.bind(below), function(o, object) {
+				console.log(object.id +  " " + object.type)
+				below.add(object)
+			})
+			console.log("logoCanvas:")
+			logoCanvas.loadFromJSON(data.logo, logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
+				console.log(object.id +  " " + object.type)
+				logoCanvas.add(object)
+			})
+		/*	customFonts.splice(0, customFonts.length)
+			below.clear()
+			var data = fileReader.result;  // data <-- in this var you have the file data in Base64 format
+			const tmp = JSON.parse(data)
+			const newBG = tmp.background;
+			if (tmp.customFonts.length > 0) {
+				for (x in tmp.customFonts) {
+					const loadedFont = tmp.customFonts[x]
+					validFonts.push(loadedFont.familyName)
+					$("head").prepend("<style>@font-face {\n   font-family: '"+loadedFont.familyName+"';\n   src: url('"+loadedFont.fontData+"') format('truetype');\n}\n."+loadedFont.familyName+" { font-family: '"+loadedFont.familyName+"'; font-size: 1.1em;}\n</style>");
+					fontSources[loadedFont.familyName] = loadedFont.fontData;
+					var style = loadedFont.familyName;
+					var font_family = $("."+style).css("font-family");
+					var optgroup = $("<optgroup class='"+loadedFont.familyName+"'>");
+					optgroup.append("<option value='"+loadedFont.familyName+"'>"+loadedFont.fontName+"</option>")
+					$("#fontTypeCombo").append(optgroup)
+					customFonts.push(loadedFont)
+				}	
 			}
-		});
-	}
+			const selectedFont = (validFonts.includes(tmp.selectedFont)) ? tmp.selectedFont : "Rubik_One";
+			$("#teamName").val(tmp.team)
+			$("#startYear").val(tmp.start)
+			$("#endYear").val(tmp.end)
+			var wordmarkVisible = null;
+			below.loadFromJSON(data, below.renderAll.bind(below), function(o, object) {
+				
+				below.add(object)
+				if (object.type == "text") {
+					var myfont = new FontFaceObserver(tmp.selectedFont)
+					myfont.load()
+						.then(function() {
+						// when font is loaded, use it.
+							object.set({
+								"fontFamily": validFonts.includes(tmp.selectedFont) ? object.fontFamily : "Rubik One"
+							})
+							below.renderAll();
+						}).catch(function(e) {
+							console.log(e)
+							//alert('font loading failed ' + data.familyName);
+						});
+					below.renderAll()
+					//
+				}
+				if (object.id == "wordmarkTextTop") { 
+					$("#wordmarkTextBox").val(object.text)
+					$("#textColor").spectrum("set", object.fill)
+					$("#fontSpacing").val(object.charSpacing)
+					$("#fontSize").val(object.fontSize)
+					$("#fontTypeCombo").val(selectedFont).trigger('change')
+					$("#fontTypeCombo").removeClass().addClass(selectedFont);
+					$("#fontTypeCombo").addClass("textOption")
+					$("#textLogoCheck").attr("checked", object.visible)
+					$(".textOption").each(function() {
+						if (object.visible) {
+							$(this).prop( "disabled", false );
+						} else {
+							$(this).prop( "disabled", true );
+						}
+					})
+					$(".textColorSelector").each(function() {
+						if (object.visible) {
+							$(this).spectrum('enable');
+						} else {
+							$(this).spectrum('disable');
+						}
+					})
+				}
+				if (object.id == "wordmarkTextTopStroke") {
+					$("#textStrokeColor").spectrum("set", object.fill)
+				}
+				if (object.id.substring(0,10) == "centerLine" && object.id.slice(-6) != "Boards" && object.visible == true) {
+					$("#centerLineStyle").val(object.id.slice(-2))
+				}
+				if (object.id.substring(0,8) == "ezCircle" && object.visible == true) {
+					$("#circleStyle").val(object.id.slice(-1))
+				}
+				if (object.id.substring(0,9) == "hashmarks" && object.visible == true) {
+					$("#hashmarkStyle").val(object.id.slice(-1))
+				}
+				if (object.id.substring(0,6) == "ezDots" && object.visible == true) {
+					$("#dotStyle").val(object.id.slice(-1))
+				}
+				if (object.id == "strokeCenterCircle") {
+					$("#strokeCenterCircle").attr('checked', object.visible);
+				}
+				if (object.id == "strokeCenterLine") {
+					$("#strokeCenterLine").attr('checked', object.visible);
+				}
+				if (object.id == "trapezoidStroke") {
+					$("#trapezoidStroke").attr('checked', object.visible);
+				}
+				if (object.id == "nets") {
+					$("#nets").attr("checked", object.visible)
+				}
+				if (object.id == "guides") {
+					$("#guides").attr("checked", object.visible)
+				}
+				
+				switch (object.id) {
+					case "blueLines":
+						$("#blueLineColor").spectrum("set", object.fill)
+						break;
+					case "centerCircleFill":
+						$("#centerCircleFillColor").spectrum("set", object.fill)
+						break;
+					case "centerCircle":
+						$("#centerCircleColor").spectrum("set", object.fill)
+						break;
+						$("#centerDotColor").spectrum("set", object.fill)
+						break;
+					case "centerLine01":
+						$("#centerLineColor").spectrum("set", object.fill)
+						break;
+					case "nzFaceOffSpots1":
+						$("#nzFaceOffSpotsColor").spectrum("set", object.fill)
+						break;
+					case "ezCircle1":
+						$("#ezCircle1Color").spectrum("set", object.fill)
+						break;
+					case "ezDots1":
+						$("#ezDots1Color").spectrum("set", object.fill)
+						break;
+					case "hashmarks1":
+						$("#hasmkarks1Color").spectrum("set", object.fill)
+						break;
+					case "goalLines":
+						$("#goalLinesColor").spectrum("set", object.fill)
+						break;
+					case "creaseFill1":
+						$("#creaseFillColor").spectrum("set", object.fill)
+						break;
+					case "creaseStroke1":
+						$("#creaseStrokeColor").spectrum("set", object.fill)
+						break;
+					case "trapezoidStroke":
+						$("#trapezoidStrokeColor").spectrum("set", object.fill)
+						break;
+					default:
+						break;
+				}
+				
+			});
+
+			$("#rinkColor").spectrum("set", newBG)
+			initializeOverlay()
+			below.renderAll.bind(below)  */
+			reRenderBG()
+		}
+		console.log($(this).prop('files')[0])
+    	fileReader.readAsText($(this).prop('files')[0]);
+	})
 	
 	$("#imgur").on("click",function(e) {
 		$("#overlay").css("display","inline-block");
