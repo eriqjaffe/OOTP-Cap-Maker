@@ -25,19 +25,21 @@
 		const params = new URLSearchParams(window.location.search)
 		const port = params.get('port')
 
-		var initialColors = {capColor:"#c6011f",underBrimColor:"#656765",topsideBrimColor:"#1d1654",squatcheeColor:"yellow",frontPanelColor:"#FFFFFF",smallFrontPanelColor:"yellow",pinstripeColor:"blue",pinstripe2Color:"cyan", horizontalPinstripeColor:"yellow",capLogoTextColor:"white",capLogoStroke1Color:"green",capLogoStroke2Color:"black",capLogo2TextColor:"white",capLogo2Stroke1Color:"green",capLogo2Stroke2Color:"black",bandBoxSingleThickColor:"orange",bandBoxDoubleThickColor:"greenyellow",jockeyColor:"brown",braidStripeInnerColor:"red",braidStripeOuterColor:"blue",frontPanelBorderColor:"cyan",bostonColor:"yellowgreen",smallPanelBorderColor:"cyan",curvedBrimColor:"cyan",curvedBrimBorderColor:"blue",peakBandColor:"orange",stingyBrimColor:"red",lidPinstripesColor:"blue",stingyLidPinstripesColor:"yellow",eyeletFillColor:"black",eyeletStrokeColor:"yellow",snakeskinColor:"#000000",scrambledEggColor:"#FED141",makersMarkColor:"#FFFFFF"}
-		var capLeftX = 211.25;
-		var capLeftY = 352.25;
-		var capLeftA = 184.33062880747013;
-		var capRightX = 293.25;
-		var capRightY = 452.25;
-		var capRightA = 111.18174681139828;
+		const initialColors = {capColor:"#c6011f",underBrimColor:"#656765",topsideBrimColor:"#1d1654",squatcheeColor:"yellow",frontPanelColor:"#FFFFFF",smallFrontPanelColor:"yellow",pinstripeColor:"blue",pinstripe2Color:"cyan", horizontalPinstripeColor:"yellow",capLogoTextColor:"white",capLogoStroke1Color:"green",capLogoStroke2Color:"black",capLogo2TextColor:"white",capLogo2Stroke1Color:"green",capLogo2Stroke2Color:"black",bandBoxSingleThickColor:"orange",bandBoxDoubleThickColor:"greenyellow",jockeyColor:"brown",braidStripeInnerColor:"red",braidStripeOuterColor:"blue",frontPanelBorderColor:"cyan",bostonColor:"yellowgreen",smallPanelBorderColor:"cyan",curvedBrimColor:"cyan",curvedBrimBorderColor:"blue",peakBandColor:"orange",stingyBrimColor:"red",lidPinstripesColor:"blue",stingyLidPinstripesColor:"yellow",eyeletFillColor:"black",eyeletStrokeColor:"yellow",snakeskinColor:"#000000",scrambledEggColor:"#FED141",makersMarkColor:"#FFFFFF"}
+		const capLeftX = 211.25;
+		const capLeftY = 352.25;
+		const capLeftA = 184.33062880747013;
+		const capRightX = 293.25;
+		const capRightY = 452.25;
+		const capRightA = 111.18174681139828;
 		var base_color, underBrimColor, topsideBrimColor, squatcheeColor;
 		var defaultTexture = "texture.png";
 		var prefColorFormat = $.localStorage.getItem('capmaker.color_format');
 		if (!prefColorFormat) {
 			prefColorFormat = "hex";
 		}
+		//var logosArr = ["47brand","adidas","adidas_2","adidas_3","asics","asics2","bauer","ccm","ccm_2","ccm_3","demarini","easton","koho","lutch","macron","macron2","majestic","majestic_2","maxim","mizuno","newera","new_balance","nike","oneill","proplayer","puma","rawlings","rawlings_2","rbk","rbk_2","reebok","russell","russell_2","spalding","spalding_2","ssk","umbro","under_armour","wilson"]
+		const logosArr = [{"name":"logo_47brand","height":"24"},{"name":"logo_adidas_3","height":"24"},{"name":"logo_asics2","height":"24"},{"name":"logo_demarini","height":"24"},{"name":"logo_macron2","height":"24"},{"name":"logo_majestic","height":"24"},{"name":"logo_majestic_2","height":"24"},{"name":"logo_mizuno","height":"24"},{"name":"logo_new_balance","height":"24"},{"name":"logo_newera","height":"24"},{"name":"logo_nike","height":"15"},{"name":"logo_oneill","height":"12"},{"name":"logo_rawlings_2","height":"24"},{"name":"logo_rbk","height":"22"},{"name":"logo_russell_2","height":"24"},{"name":"logo_spalding_2","height":"24"},{"name":"logo_under_armour","height":"24"},{"name":"logo_wilson","height":"24"}]
 		var exportMeta = {}
 	</script>
     <!--[if IE]>
@@ -148,30 +150,30 @@
 									<td style="text-align:right;"><input class="selector" type="text" id="eyeletStrokeColor" data-element="eyeletStrokeColor" data-canvas="above"><input class="selector" type="text" id="eyeletFillColor" data-element="eyeletFillColor" data-canvas="above"></td>
 								</tr>
 								<tr class="color_tr">
-									<td class="checkCell"><input type="checkbox" id="makersMarkCheck" class="markToggle" data-canvas="logoCanvas" data-id="makersMark"></td>
+									<td class="checkCell"><input type="checkbox" id="makersMarkCheck" class="aboveTextureToggle" data-canvas="logoCanvas" data-id="makersMark2"></td>
 									<td><label>Manufacturer's Mark: </label></td>
 									<td style="text-align:right;">
 										<select id="makersMarkSelect">
-											<option value="logo_47brand.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">47 Brand</option>
-											<option value="logo_adidas_3.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Adidas</option>
-											<option value="logo_asics2.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Asics</option>
-											<option value="logo_demarini.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">DeMarini</option>
-											<option value="logo_macron2.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Macron</option>
-											<option value="logo_majestic.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Majestic 1</option>
-											<option value="logo_majestic_2.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Majestic 2</option>
-											<option value="logo_mizuno.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Mizuno</option>
-											<option value="logo_new_balance.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">New Balance</option>
-											<option value="logo_newera.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013" selected>New Era</option>
-											<option value="logo_nike.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="15" data-original-angle="184.33062880747013">Nike</option>
-											<!-- <option value="logo_rawlings.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Rawlings 1</option> -->
-											<option value="logo_oneill.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="12" data-original-angle="184.33062880747013">O'Neill</option>
-											<option value="logo_rawlings_2.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Rawlings</option>
-											<!-- <option value="logo_reebok.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Reebok</option> -->
-											<option value="logo_rbk.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="22" data-original-angle="184.33062880747013">Reebok</option>
-											<option value="logo_russell_2.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Russell</option>
-											<option value="logo_spalding_2.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Spalding</option>
-											<option value="logo_under_armour.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Under Armour</option>
-											<option value="logo_wilson.svg" data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013">Wilson</option>
+											<option value="logo_47brand">47 Brand</option>
+											<option value="logo_adidas_3">Adidas</option>
+											<option value="logo_asics2">Asics</option>
+											<option value="logo_demarini">DeMarini</option>
+											<option value="logo_macron2">Macron</option>
+											<option value="logo_majestic">Majestic 1</option>
+											<option value="logo_majestic_2">Majestic 2</option>
+											<option value="logo_mizuno">Mizuno</option>
+											<option value="logo_new_balance">New Balance</option>
+											<option value="logo_newera" selected>New Era</option>
+											<option value="logo_nike">Nike</option>
+											<!-- <option value="logo_rawlings">Rawlings 1</option> -->
+											<option value="logo_oneill">O'Neill</option>
+											<option value="logo_rawlings_2">Rawlings</option>
+											<!-- <option value="logo_reebok">Reebok</option> -->
+											<option value="logo_rbk">Reebok</option>
+											<option value="logo_russell_2">Russell</option>
+											<option value="logo_spalding_2">Spalding</option>
+											<option value="logo_under_armour">Under Armour</option>
+											<option value="logo_wilson">Wilson</option>
 										</select>
 										<select id="makersMarkSide">
 											<option value="left" selected>Cap Left</option>
@@ -614,7 +616,7 @@
 </body>
 <script>
 	var original_color;
-	var makersMark;
+	//var makersMark;
 
 	var spinnerOptions = {lines: 13, length: 28, width: 14, radius: 42, scale: 2, corners: 1, color: '#C6011F', opacity: 0.25, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: 'spinner', top: '50%', left: '50%', shadow: false, hwaccel: false, position: 'absolute'}
     var target = document.getElementById('overlay');
@@ -875,24 +877,56 @@
 			},
 			move: function(color) {
 				$(this).data('changed', true);
-				makersMark.setFill(color.toHexString());
+				makersMark2.getObjects().forEach(function (o) {
+					o.set("fill", color.toHexString());
+				})
+				//makersMark.setFill(color.toHexString());
 				logoCanvas.renderAll();
 			},
 			change: function(color) {
 				$(this).data('changed', true);
-				makersMark.setFill(color.toHexString());
+				makersMark2.getObjects().forEach(function (o) {
+					o.set("fill", color.toHexString());
+				})
 				initialColors['makersMarkColor'] = color.toHexString();
 				logoCanvas.renderAll();
 			},
 			hide: function(color) {
 				if ($(this).data('changed')) {
 					$(this).data('changed', true);
-					makersMark.setFill(color.toHexString());
+					makersMark2.getObjects().forEach(function (o) {
+						o.set("fill", color.toHexString());
+					})
 					initialColors['makersMarkColor'] = color.toHexString();
 					logoCanvas.renderAll();
 				} 
 			}
 		})
+	})
+
+	$("#makersMarkSelect").on("change",function(e) {
+		const id = $(this).val()
+		makersMark2.getObjects().forEach(function(o) {
+			if (o.id == id) {
+				o.set("visible", true)
+			} else {
+				o.set("visible", false)
+			}
+		})
+		logoCanvas.renderAll();
+	})
+
+	$("#makersMarkSide").on("change",function(e) {
+		if ($(this).val() == "left") {
+			makersMark2.set("left", capLeftX)
+			makersMark2.set("top", capLeftY)
+			makersMark2.set("angle", capLeftA)
+		} else {
+			makersMark2.set("left", capRightX)
+			makersMark2.set("top", capRightY)
+			makersMark2.set("angle", capRightA)
+		}
+		logoCanvas.renderAll();
 	})
 
 	$(".colorSelector").spectrum({
@@ -1256,8 +1290,39 @@
 		logoCanvas.add(textLogo2);
 		logoCanvas.add(eyeletGroup);
 		logoCanvas.add(scrambledEggColor);
+
+		makersMark2 = new fabric.Group([], {
+			//data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013"
+			id: 'makersMark2',
+			visible: true,
+			left: 211.25,
+			top: 352.25,
+			angle: 184.33062880747013,
+			selectable: false,
+		})
+
+		logosArr.forEach(function(logo) {
+			fabric.loadSVGFromURL('./images/'+logo.name+'.svg',function(svg,options) {
+				tmp = new fabric.PathGroup(svg,options);
+				tmp.setOptions ({
+					originX: 'center',
+					originY: 'center',
+					id: logo.name,
+					fill: initialColors['makersMarkColor'],
+					visible: $('#makersMarkSelect').val() == logo.name
+				});
+				tmp.scaleToHeight(logo.height);
+				makersMark2.add(tmp)
+			})
+		})
+
+		makersMark2.getObjects().forEach(function(o) {
+			console.log(o)
+		})
+
+		logoCanvas.add(makersMark2)
 		
-		loadMakersMark($("#makersMarkSelect").find(':selected').data('top'),$("#makersMarkSelect").find(':selected').data('left'),$("#makersMarkSelect").find(':selected').data('angle'),$("#makersMarkSelect").find(':selected').data('height'));
+		//loadMakersMark($("#makersMarkSelect").find(':selected').data('top'),$("#makersMarkSelect").find(':selected').data('left'),$("#makersMarkSelect").find(':selected').data('angle'),$("#makersMarkSelect").find(':selected').data('height'));
 		
 		// add the texture
 		var img = new Image;      // First create the image...
@@ -2089,12 +2154,12 @@
  			imLeft = obj.get('left');
  			imTop = obj.get('top');
  		}
-		if (obj.get('type') == 'path-group') {
+		/* if (obj.get('type') == 'path-group') {
 			$("#makersMarkSelect").find(':selected').data('top',obj.get('top'));
 			$("#makersMarkSelect").find(':selected').data('left',obj.get('left'));
 			$("#makersMarkSelect").find(':selected').data('angle',obj.get('angle'));
 			$("#makersMarkSelect").find(':selected').data('height',obj.getHeight());
-		}
+		} */
 	})
 
 	logoCanvas.on('selection:cleared', function(e) {
@@ -2356,14 +2421,14 @@
 						}
 					})
 				}
-				if (object.id == 'makersMark') {
-					$("#"+object.id+"Check").prop("checked",object.visible)
-				}
+				//if (object.id == 'makersMark') {
+				//	$("#"+object.id+"Check").prop("checked",object.visible)
+				//}
 				logoCanvas.add(object)
 			})
 			
 			$("#textureSelect").trigger("change")
-			$("#makersMarkSelect").trigger("change")
+			//$("#makersMarkSelect").trigger("change")
 		/*	customFonts.splice(0, customFonts.length)
 			below.clear()
 			var data = fileReader.result;  // data <-- in this var you have the file data in Base64 format
@@ -2567,81 +2632,6 @@
 		return result;
 	}
 	
-	$(".markToggle").on("click",function() {
-		var state = $(this).is(':checked')
-		logoCanvas.getObjects().forEach(function (o) {
-			if (o.id == 'makersMark') {
-				o.set("visible", state)
-			}
-		})
-		logoCanvas.deactivateAll().renderAll()
-	})
-	
-	$("#makersMarkSelect").on("change",function(e) {
-		loadMakersMark($(this).find(':selected').data('top'),$(this).find(':selected').data('left'),$(this).find(':selected').data('angle'),$(this).find(':selected').data('height'));
-	})
-	
-	$("#makersMarkSide").on("change",function(e) {
-		$("#makersMarkSelect option").each(function(i) {
-			if ($("#makersMarkSide").val() == "left") {
-				$(this).data("left",capLeftX) 
-				$(this).data("top",capLeftY)
-				$(this).data("angle",capLeftA)
-				var objects = logoCanvas.getObjects();
-				for (x in objects) {
-					if (objects[x].get('type') == "path-group") {
-						objects[x].set({"left":capLeftX,"top":capLeftY,"angle":capLeftA});
-						objects[x].setCoords();
-					}
-				}
-			} else {
-				$(this).data("left",capRightX) 
-				$(this).data("top",capRightY)
-				$(this).data("angle",capRightA)
-				var objects = logoCanvas.getObjects();
-				for (x in objects) {
-					if (objects[x].get('type') == "path-group") {
-						objects[x].set({"left":capRightX,"top":capRightY,"angle":capRightA});
-						objects[x].setCoords();
-					}
-				}
-			}
-		})	
-		logoCanvas.renderAll();
-	})
-	
-	function loadMakersMark(top,left,angle,height) {;
-		logoCanvas.deactivateAll();
-		logoCanvas.remove(makersMark);
-		fabric.loadSVGFromURL('./images/'+$("#makersMarkSelect").val(),function(svg,options) {
-			makersMark = new fabric.PathGroup(svg,options);
-			makersMark.setOptions ({
-				originX: 'center',
-				originY: 'center',
-				left: left,
-				top: top,
-				angle: angle,
-				borderColor: 'red',
-				cornerColor: 'yellow',
-				cornerSize: 12,
-				centeredScaling: true,
-				transparentCorners: false,
-				selectable: false,
-				// lockUniScaling: true,
-				// lockScalingX: true,
-				// lockScalingY: true,
-				// lockMovementX: true,
-				// lockMovementY: true,
-				id: 'makersMark',
-				fill: initialColors['makersMarkColor'],
-				visible: $(".markToggle").is(':checked')
-			});
-			makersMark.scaleToHeight(height);
-			logoCanvas.add(makersMark);
-			logoCanvas.renderAll();
-		})
-	}
-
 	$("#fakeFontButton").on("click", function(e) {
 		e.preventDefault;
 		$("#uploadTheFont").click();
