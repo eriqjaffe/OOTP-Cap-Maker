@@ -877,16 +877,23 @@
 			},
 			move: function(color) {
 				$(this).data('changed', true);
-				makersMark2.getObjects().forEach(function (o) {
-					o.set("fill", color.toHexString());
+				var g = logoCanvas.getObjects().find(o => o.id === 'makersMark2');
+				g.getObjects().forEach(function(o) {
+					o.set("fill", color.toHexString())
+					makersMark2.dirty = true;
 				})
+				//makersMark2.getObjects().forEach(function (o) {
+				//	o.set("fill", color.toHexString());
+				//})
 				//makersMark.setFill(color.toHexString());
 				logoCanvas.renderAll();
 			},
 			change: function(color) {
 				$(this).data('changed', true);
-				makersMark2.getObjects().forEach(function (o) {
-					o.set("fill", color.toHexString());
+				var g = logoCanvas.getObjects().find(o => o.id === 'makersMark2');
+				g.getObjects().forEach(function(o) {
+					o.set("fill", color.toHexString())
+					makersMark2.dirty = true;
 				})
 				initialColors['makersMarkColor'] = color.toHexString();
 				logoCanvas.renderAll();
@@ -894,8 +901,10 @@
 			hide: function(color) {
 				if ($(this).data('changed')) {
 					$(this).data('changed', true);
-					makersMark2.getObjects().forEach(function (o) {
-						o.set("fill", color.toHexString());
+					var g = logoCanvas.getObjects().find(o => o.id === 'makersMark2');
+					g.getObjects().forEach(function(o) {
+						o.set("fill", color.toHexString())
+						makersMark2.dirty = true;
 					})
 					initialColors['makersMarkColor'] = color.toHexString();
 					logoCanvas.renderAll();
@@ -906,13 +915,22 @@
 
 	$("#makersMarkSelect").on("change",function(e) {
 		const id = $(this).val()
-		makersMark2.getObjects().forEach(function(o) {
+		var g = logoCanvas.getObjects().find(o => o.id === 'makersMark2');
+		g.getObjects().forEach(function(o) {
 			if (o.id == id) {
 				o.set("visible", true)
 			} else {
 				o.set("visible", false)
 			}
+			makersMark2.dirty = true;
 		})
+		/* makersMark2.getObjects().forEach(function(o) {
+			if (o.id == id) {
+				o.set("visible", true)
+			} else {
+				o.set("visible", false)
+			}
+		}) */
 		logoCanvas.renderAll();
 	})
 
@@ -1294,7 +1312,7 @@
 		makersMark2 = new fabric.Group([], {
 			//data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013"
 			id: 'makersMark2',
-			visible: true,
+			visible: false,
 			left: 211.25,
 			top: 352.25,
 			angle: 184.33062880747013,
@@ -1368,6 +1386,8 @@
 		exportMeta.texture = $("#textureSelect").val()
 		exportMeta.makersMark = $("#makersMarkSelect").val()
 		exportMeta.makersMarkSide = $("#makersMarkSide").val()
+		exportMeta.makersMarkFill = $("#makersMarkColor").spectrum("get").toHexString()
+		exportMeta.selectedFont = $("#fontTypeCombo").val()
 
 		const jsonExport = {
 			'below': below.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners']),
@@ -2390,10 +2410,11 @@
 			$("#textureSelect").val(data.texture)
 			$("#makersMarkSelect").val(data.makersMark)
 			$("#makersMarkSide").val(data.makersMarkSide)
+			$("#makersMarkColor").spectrum("set", data.makersMarkFill)
+			var anyTextVisible = false;
 			textureFJS.clear();
 			logoCanvas.clear();
 			below.clear();
-			//console.log("below:")
 			below.loadFromJSON(data.canvas.below, below.renderAll.bind(below), function(o, object) {
 				//console.log(object.id +  " " + object.type)
 				below.add(object)
@@ -2406,9 +2427,8 @@
 				$("#"+object.id+"Check").prop("checked",object.visible)
 				
 			})
-			//console.log("logoCanvas:")
 			logoCanvas.loadFromJSON(data.canvas.logo, logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
-				//console.log(object.id +  " " + object.type + " " + object.visible)
+				console.log(object.id +  " " + object.type + " " + object.visible)
 				$("#"+object.id+"Check").prop("checked",object.visible)
 				if (object.id == 'eyeletGroup') {
 					object.getObjects().forEach(function(o) {
@@ -2421,6 +2441,39 @@
 						}
 					})
 				}
+				if (object.id == 'makersMark2') {
+					$("#makersMarkCheck").prop("checked",object.visible)
+				}
+				if (object.id == 'textLogo') {
+					console.log(object._objects[0].fontFamily)
+					if (object.visible) {
+						anyTextVisible = true;
+						$(".textToggle").each(function() {
+							$(this).prop("disabled",false);
+						}) 
+					} else {
+						$(".textToggle").each(function() {
+							$(this).prop("disabled",true);
+						}) 
+					}
+				}
+				if (object.id == 'textLogo2') {
+					if (object.visible) {
+						anyTextVisible = true;
+						$(".text2Toggle").each(function() {
+							$(this).prop("disabled",false);
+						}) 
+					} else {
+						$(".text2Toggle").each(function() {
+							$(this).prop("disabled",true);
+						}) 
+					}
+				}
+				//if (object.id == 'makersMark2') {
+				//	var obj = makersMark2.getObjects().find(o => o.id === 'logo_47brand');
+				//	console.log(obj.fill)
+				//	$("#makersMarkColor").spectrum("set", obj.fill)
+				//}
 				//if (object.id == 'makersMark') {
 				//	$("#"+object.id+"Check").prop("checked",object.visible)
 				//}
@@ -2428,7 +2481,19 @@
 			})
 			
 			$("#textureSelect").trigger("change")
-			//$("#makersMarkSelect").trigger("change")
+			
+			if (anyTextVisible == true) {
+				$("#fontTypeCombo").prop("disabled",false);
+				$(".textOption").each(function() {
+					$(this).prop("disabled",false);
+				})
+			} else {
+				$("#fontTypeCombo").prop("disabled",true);
+				$(".textOption").each(function() {
+					$(this).prop("disabled",true);
+				})
+			}
+
 		/*	customFonts.splice(0, customFonts.length)
 			below.clear()
 			var data = fileReader.result;  // data <-- in this var you have the file data in Base64 format
@@ -2449,135 +2514,10 @@
 				}	
 			}
 			const selectedFont = (validFonts.includes(tmp.selectedFont)) ? tmp.selectedFont : "Rubik_One";
-			$("#teamName").val(tmp.team)
-			$("#startYear").val(tmp.start)
-			$("#endYear").val(tmp.end)
 			var wordmarkVisible = null;
-			below.loadFromJSON(data, below.renderAll.bind(below), function(o, object) {
-				
-				below.add(object)
-				if (object.type == "text") {
-					var myfont = new FontFaceObserver(tmp.selectedFont)
-					myfont.load()
-						.then(function() {
-						// when font is loaded, use it.
-							object.set({
-								"fontFamily": validFonts.includes(tmp.selectedFont) ? object.fontFamily : "Rubik One"
-							})
-							below.renderAll();
-						}).catch(function(e) {
-							console.log(e)
-							//alert('font loading failed ' + data.familyName);
-						});
-					below.renderAll()
-					//
-				}
-				if (object.id == "wordmarkTextTop") { 
-					$("#wordmarkTextBox").val(object.text)
-					$("#textColor").spectrum("set", object.fill)
-					$("#fontSpacing").val(object.charSpacing)
-					$("#fontSize").val(object.fontSize)
-					$("#fontTypeCombo").val(selectedFont).trigger('change')
-					$("#fontTypeCombo").removeClass().addClass(selectedFont);
-					$("#fontTypeCombo").addClass("textOption")
-					$("#textLogoCheck").attr("checked", object.visible)
-					$(".textOption").each(function() {
-						if (object.visible) {
-							$(this).prop( "disabled", false );
-						} else {
-							$(this).prop( "disabled", true );
-						}
-					})
-					$(".textColorSelector").each(function() {
-						if (object.visible) {
-							$(this).spectrum('enable');
-						} else {
-							$(this).spectrum('disable');
-						}
-					})
-				}
-				if (object.id == "wordmarkTextTopStroke") {
-					$("#textStrokeColor").spectrum("set", object.fill)
-				}
-				if (object.id.substring(0,10) == "centerLine" && object.id.slice(-6) != "Boards" && object.visible == true) {
-					$("#centerLineStyle").val(object.id.slice(-2))
-				}
-				if (object.id.substring(0,8) == "ezCircle" && object.visible == true) {
-					$("#circleStyle").val(object.id.slice(-1))
-				}
-				if (object.id.substring(0,9) == "hashmarks" && object.visible == true) {
-					$("#hashmarkStyle").val(object.id.slice(-1))
-				}
-				if (object.id.substring(0,6) == "ezDots" && object.visible == true) {
-					$("#dotStyle").val(object.id.slice(-1))
-				}
-				if (object.id == "strokeCenterCircle") {
-					$("#strokeCenterCircle").attr('checked', object.visible);
-				}
-				if (object.id == "strokeCenterLine") {
-					$("#strokeCenterLine").attr('checked', object.visible);
-				}
-				if (object.id == "trapezoidStroke") {
-					$("#trapezoidStroke").attr('checked', object.visible);
-				}
-				if (object.id == "nets") {
-					$("#nets").attr("checked", object.visible)
-				}
-				if (object.id == "guides") {
-					$("#guides").attr("checked", object.visible)
-				}
-				
-				switch (object.id) {
-					case "blueLines":
-						$("#blueLineColor").spectrum("set", object.fill)
-						break;
-					case "centerCircleFill":
-						$("#centerCircleFillColor").spectrum("set", object.fill)
-						break;
-					case "centerCircle":
-						$("#centerCircleColor").spectrum("set", object.fill)
-						break;
-						$("#centerDotColor").spectrum("set", object.fill)
-						break;
-					case "centerLine01":
-						$("#centerLineColor").spectrum("set", object.fill)
-						break;
-					case "nzFaceOffSpots1":
-						$("#nzFaceOffSpotsColor").spectrum("set", object.fill)
-						break;
-					case "ezCircle1":
-						$("#ezCircle1Color").spectrum("set", object.fill)
-						break;
-					case "ezDots1":
-						$("#ezDots1Color").spectrum("set", object.fill)
-						break;
-					case "hashmarks1":
-						$("#hasmkarks1Color").spectrum("set", object.fill)
-						break;
-					case "goalLines":
-						$("#goalLinesColor").spectrum("set", object.fill)
-						break;
-					case "creaseFill1":
-						$("#creaseFillColor").spectrum("set", object.fill)
-						break;
-					case "creaseStroke1":
-						$("#creaseStrokeColor").spectrum("set", object.fill)
-						break;
-					case "trapezoidStroke":
-						$("#trapezoidStrokeColor").spectrum("set", object.fill)
-						break;
-					default:
-						break;
-				}
-				
-			});
-
-			$("#rinkColor").spectrum("set", newBG)
-			initializeOverlay()
-			below.renderAll.bind(below)  */
+			*/
 			reRenderBG()
 		}
-		//console.log($(this).prop('files')[0])
     	fileReader.readAsText($(this).prop('files')[0]);
 	})
 	

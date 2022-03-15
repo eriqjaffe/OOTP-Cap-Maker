@@ -113,13 +113,13 @@ app2.get("/uploadImage", (req, res) => {
 		]
 	  }).then(result => {
 		  if(!result.canceled) {
-			console.log(result.filePaths)
+			//console.log(result.filePaths)
 			Jimp.read(result.filePaths[0], (err, image) => {
 				if (err) {
 					console.log(err);
 				} else {
 					image.getBase64(Jimp.AUTO, (err, ret) => {
-						console.log(ret);
+						//console.log(ret);
 						//res.json({
 						//	"filename": "hello world",
 						//	"image": res
