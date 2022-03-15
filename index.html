@@ -40,6 +40,10 @@
 		}
 		//var logosArr = ["47brand","adidas","adidas_2","adidas_3","asics","asics2","bauer","ccm","ccm_2","ccm_3","demarini","easton","koho","lutch","macron","macron2","majestic","majestic_2","maxim","mizuno","newera","new_balance","nike","oneill","proplayer","puma","rawlings","rawlings_2","rbk","rbk_2","reebok","russell","russell_2","spalding","spalding_2","ssk","umbro","under_armour","wilson"]
 		const logosArr = [{"name":"logo_47brand","height":"24"},{"name":"logo_adidas_3","height":"24"},{"name":"logo_asics2","height":"24"},{"name":"logo_demarini","height":"24"},{"name":"logo_macron2","height":"24"},{"name":"logo_majestic","height":"24"},{"name":"logo_majestic_2","height":"24"},{"name":"logo_mizuno","height":"24"},{"name":"logo_new_balance","height":"24"},{"name":"logo_newera","height":"24"},{"name":"logo_nike","height":"15"},{"name":"logo_oneill","height":"12"},{"name":"logo_rawlings_2","height":"24"},{"name":"logo_rbk","height":"22"},{"name":"logo_russell_2","height":"24"},{"name":"logo_spalding_2","height":"24"},{"name":"logo_under_armour","height":"24"},{"name":"logo_wilson","height":"24"}]
+		var validFonts = ['Acme','AthleticGothic','AthleticGothicShadow','BeavertonScript','Berkshire_Swash','Cantora_One','CaxtonRoman','Chela_One','Circus','Condiment','Cookie','Courgette','Croissant_One','Damion','Engagement','RawlingsFancyBlock','Germania_One','Graduate','Grand_Hotel','Jockey_One','Kansas','Kaushan_Script','Leckerli_One','Lily_Script_One','Lobster','Lobster_Two','Metal_Mania','Miniver','Molle','New_Rocker','Norican','OldEnglish','Oleo_Script','Oleo_Script_Swash_Caps','Pacifico','Pirata_One','Playball','ProFullBlock','RichardsonFancyBlock','Rubik_One','Rum_Raisin','Satisfy','Seymour_One','spl28','TiffanyRegular','Trade_Winds','Tuscan','UnifrakturCook','UnifrakturMaguntia','Vibur','Viga','Wellfleet','Wendy_One','Yellowtail']
+		var fontSources = {Acme: "Acme-Regular.ttf",athletic_gothicregular: "athletic_gothic-webfont.ttf",athletic_gothic_shadowregular: "athletic_gothic_shadow-webfont.ttf",beaverton_scriptregular: "beaverton_script-webfont.ttf",'"Berkshire Swash"': "BerkshireSwash-Regular.ttf",'"Cantora One"': "CantoraOne-Regular.ttf",caxton_romanregular: "caxton_roman-webfont.ttf",'"Chela One"': "ChelaOne-Regular.ttf",russell_circusregular: "circus-webfont.ttf",Condiment: "Condiment-Regular.ttf",Cookie: "Cookie-Regular.ttf",Courgette: "Courgette-Regular.ttf",'"Croissant One"': "CroissantOne-Regular.ttf",Damion: "Damion-Regular.ttf",Engagement: "Engagement-Regular.ttf",rawlings_fancy_blockregular: "rawlingsfancyblock-regular-webfont.ttf",'"Germania One"': "GermaniaOne-Regular.ttf",Graduate: "Graduate-Regular.ttf",'"Grand Hotel"': "GrandHotel-Regular.ttf",'"Jockey One"': "JockeyOne-Regular.ttf",kansasregular: "tuscan-webfont.ttf",'"Kaushan Script"': "KaushanScript-Regular.ttf",'"Leckerli One"': "LeckerliOne-Regular.ttf",'"Lily Script One"': "LilyScriptOne-Regular.ttf",Lobster: "Lobster-Regular.ttf",'"Lobster Two"': "LobsterTwo-Regular.ttf",'"Metal Mania"': "MetalMania-Regular.ttf",Miniver: "Miniver-Regular.ttf",'Molle,italic': "Molle-Regular.ttf",'"New Rocker"': "NewRocker-Regular.ttf",Norican: "Norican-Regular.ttf",rawlings_old_englishmedium: "rawlingsoldenglish-webfont.ttf",'"Oleo Script"': "OleoScript-Regular.ttf",'"Oleo Script Swash Caps"': "OleoScriptSwashCaps-Regular.ttf",Pacifico: "Pacifico.ttf",'"Pirata One"': "PirataOne-Regular.ttf",Playball: "Playball-Regular.ttf",pro_full_blockregular: "pro_full_block-webfont.ttf",richardson_fancy_blockregular: "richardson_fancy_block-webfont.ttf",'"Rubik One"': "RubikOne-Regular.ttf",'"Rum Raisin"': "RumRaisin-Regular.ttf",Satisfy: "Satisfy-Regular.ttf",'"Seymour One"': "SeymourOne-Regular.ttf",spl28scriptregular: "spl28script-webfont.ttf",ua_tiffanyregular: "tiffany-webfont.ttf",'"Trade Winds"': "TradeWinds-Regular.ttf",mlb_tuscan_newmedium: "mlb_tuscan_new-webfont.ttf",UnifrakturCook: "UnifrakturCook-Bold.ttf",UnifrakturMaguntia: "UnifrakturMaguntia-Book.ttf",Vibur: "Vibur-Regular.ttf",Viga: "Viga-Regular.ttf",Wellfleet: "Wellfleet-Regular.ttf",'"Wendy One"': "WendyOne-Regular.ttf",Yellowtail: "Yellowtail-Regular.ttf"};
+		var fontFamilies = {Acme: "Acme",athletic_gothicregular: "AthleticGothic",athletic_gothic_shadowregular: "AthleticGothicShadow",beaverton_scriptregular: "BeavertonScript",'Berkshire Swash': "Berkshire_Swash",'Cantora One': "Cantora_One",caxton_romanregular: "CaxtonRoman",'Chela One': "Chela_One",russell_circusregular: "Circus",Condiment: "Comdiment",Cookie: "Coookie",Courgette: "Courgette",'Croissant One': "Croissant_one",Damion: "Damion",Engagement: "Engagement",rawlings_fancy_blockregular: "RawlingsFancyBlock",'Germania One': "Germania_One",Graduate: "Graduate",'Grand Hotel': "Grand_Hotel",'Jockey One': "Jockey_One",kansasregular: "Kansas",'Kaushan Script': "Kaushan_Script",'Leckerli One': "Leckerli_One",'Lily Script One': "Lily_Script_One",Lobster: "Lobster",'Lobster Two': "Lobster_Two",'Metal Mania': "Metal_Mania",Miniver: "Miniver",'Molle,italic': "Molle",'New Rocker': "New_Rocker",Norican: "Norican",rawlings_old_englishmedium: "OldEnglish",'Oleo Script': "Oleo_Script",'Oleo Script Swash Caps': "Oleo_Script_Swash_Caps",Pacifico: "Pacifico",'Pirata One': "Pirata_One",Playball: "Playball",pro_full_blockregular: "ProFullBlock",richardson_fancy_blockregular: "RichardsonFancyBlock",'Rubik One': "Rubik_One",'Rum Raisin': "Rum_Raisin",Satisfy: "Satisfy",'Seymour One': "Seymour_One",spl28scriptregular: "spl28",ua_tiffanyregular: "TiffanyRegular",'Trade Winds': "Trade_Winds",mlb_tuscan_newmedium: "Tuscan",UnifrakturCook: "UnifrakturCook",UnifrakturMaguntia: "UnifrakturMaguntia",Vibur: "Vibur",Viga: "Viga",Wellfleet: "Wellfleet",'Wendy One': "Wendy_One",Yellowtail: "Yellowtail"};
+		var customFonts = [];
 		var exportMeta = {}
 	</script>
     <!--[if IE]>
@@ -618,6 +622,13 @@
 	var original_color;
 	//var makersMark;
 
+	fabric.Object.prototype.set({
+    	borderColor: 'red',
+		cornerColor: 'yellow',
+		cornerSize: 12,
+		transparentCorners: false
+	});
+
 	var spinnerOptions = {lines: 13, length: 28, width: 14, radius: 42, scale: 2, corners: 1, color: '#C6011F', opacity: 0.25, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: 'spinner', top: '50%', left: '50%', shadow: false, hwaccel: false, position: 'absolute'}
     var target = document.getElementById('overlay');
     var spinner = new Spinner(spinnerOptions).spin(target);
@@ -702,29 +713,39 @@
 	initializeCanvas();
 	
     $("#fontTypeCombo").on("change",function() {
-		var style = $(this).val();
-		var font_family = $("."+style).css("font-family");
-		capLogoText.fontFamily = font_family;
-		capLogoTextStroke1.fontFamily = font_family;
-		capLogoTextStroke2.fontFamily = font_family;
-		capLogo2Text.fontFamily = font_family;
-		capLogo2TextStroke1.fontFamily = font_family;
-		capLogo2TextStroke2.fontFamily = font_family;
+		const style = $(this).val();
+		const font_family = $("."+style).css("font-family");
+		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
+		g.getObjects().forEach(function(o) {
+			o.set("fontFamily", font_family)
+			textLogo.dirty = true;
+		})
+		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
+		g.getObjects().forEach(function(o) {
+			o.set("fontFamily", font_family)
+			textLogo2.dirty = true;
+		})
 		logoCanvas.renderAll();
 		$(this).removeClass().addClass(style);
 	})
 	
 	$("#capText").on("keyup",function() {
-		capLogoText.text = $(this).val();
-		capLogoTextStroke1.text = $(this).val();
-		capLogoTextStroke2.text = $(this).val();
+		const letter = $(this).val()
+		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
+		g.getObjects().forEach(function(o) {
+			o.set("text", letter)
+			textLogo.dirty = true;
+		})
 		logoCanvas.renderAll();
 	})
 	
 	$("#capText2").on("keyup",function() {
-		capLogo2Text.text = $(this).val();
-		capLogo2TextStroke1.text = $(this).val();
-		capLogo2TextStroke2.text = $(this).val();
+		const letter = $(this).val()
+		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
+		g.getObjects().forEach(function(o) {
+			o.set("text", letter)
+			textLogo2.dirty = true;
+		})
 		logoCanvas.renderAll();
 	})
 	
@@ -1220,7 +1241,7 @@
 			fill: initialColors["capLogoStroke2Color"]
 		})
 		
-		var textLogo = new fabric.Group ([capLogoTextStroke2, capLogoTextStroke1, capLogoText])
+		textLogo = new fabric.Group ([capLogoTextStroke2, capLogoTextStroke1, capLogoText])
 		textLogo.set({
 			visible:false,
 			id:'textLogo'
@@ -1274,7 +1295,7 @@
 			fill: initialColors["capLogo2Stroke2Color"]
 		})
 		
-		var textLogo2 = new fabric.Group ([capLogo2TextStroke2, capLogo2TextStroke1, capLogo2Text])
+		textLogo2 = new fabric.Group ([capLogo2TextStroke2, capLogo2TextStroke1, capLogo2Text])
 		textLogo2.set({
 			visible:false,
 			id:'textLogo2'
@@ -1334,13 +1355,7 @@
 			})
 		})
 
-		makersMark2.getObjects().forEach(function(o) {
-			console.log(o)
-		})
-
 		logoCanvas.add(makersMark2)
-		
-		//loadMakersMark($("#makersMarkSelect").find(':selected').data('top'),$("#makersMarkSelect").find(':selected').data('left'),$("#makersMarkSelect").find(':selected').data('angle'),$("#makersMarkSelect").find(':selected').data('height'));
 		
 		// add the texture
 		var img = new Image;      // First create the image...
@@ -1388,6 +1403,7 @@
 		exportMeta.makersMarkSide = $("#makersMarkSide").val()
 		exportMeta.makersMarkFill = $("#makersMarkColor").spectrum("get").toHexString()
 		exportMeta.selectedFont = $("#fontTypeCombo").val()
+		exportMeta.customFonts = customFonts;
 
 		const jsonExport = {
 			'below': below.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners']),
@@ -1395,8 +1411,6 @@
 		}
 
 		exportMeta.canvas = jsonExport
-
-		console.log(exportMeta)
 
 		var startYear = parseInt($("#startYear").val());
 		var endYear = parseInt($("#endYear").val())
@@ -1661,11 +1675,7 @@
 						perPixelTargetFind: true,
 						centeredScaling: true,
 						centeredRotation: true,
-						name: makeid(10),
-						borderColor: 'red',
-						cornerColor: 'yellow',
-						cornerSize: 12,
-						transparentCorners: false
+						name: makeid(10)
 					});
 					image.resizeFilters.push(new fabric.Image.filters.Resize({
 						resizeType: 'lanczos', // typo fixed
@@ -1936,11 +1946,7 @@
 								perPixelTargetFind: true,
 								centeredScaling: true,
 								centeredRotation: true,
-								borderColor: 'red',
-								cornerColor: 'yellow',
-								cornerSize: 12,
 								name: pictureName,
-								transparentCorners: false
 							});
 							
 							image.resizeFilters.push(new fabric.Image.filters.Resize({
@@ -2002,11 +2008,7 @@
 								perPixelTargetFind: true,
 								centeredScaling: true,
 								centeredRotation: true,
-								borderColor: 'red',
-								cornerColor: 'yellow',
-								cornerSize: 12,
-								name: pictureName,
-								transparentCorners: false
+								name: pictureName
 							});
 							
 							image.resizeFilters.push(new fabric.Image.filters.Resize({
@@ -2081,11 +2083,7 @@
 								perPixelTargetFind: true,
 								centeredScaling: true,
 								centeredRotation: true,
-								borderColor: 'red',
-								cornerColor: 'yellow',
-								cornerSize: 12,
-								name: pictureName,
-								transparentCorners: false
+								name: pictureName
 							});
 							
 							image.resizeFilters.push(new fabric.Image.filters.Resize({
@@ -2138,11 +2136,7 @@
 								perPixelTargetFind: true,
 								centeredScaling: true,
 								centeredRotation: true,
-								borderColor: 'red',
-								cornerColor: 'yellow',
-								cornerSize: 12,
-								name: pictureName,
-								transparentCorners: false
+								name: pictureName
 							});
 							
 							image.resizeFilters.push(new fabric.Image.filters.Resize({
@@ -2401,6 +2395,7 @@
 	$("#loadCanvas").on("change",function(e) {
 		var fileReader = new FileReader();
 		fileReader.onload = function () {
+			customFonts.splice(0, customFonts.length)
 			const data = JSON.parse(fileReader.result)
 			//console.log(data)
 			$("#teamName").val(data.team)
@@ -2411,6 +2406,21 @@
 			$("#makersMarkSelect").val(data.makersMark)
 			$("#makersMarkSide").val(data.makersMarkSide)
 			$("#makersMarkColor").spectrum("set", data.makersMarkFill)
+			if (data.customFonts.length > 0) {
+				for (x in data.customFonts) {
+					const loadedFont = data.customFonts[x]
+					validFonts.push(loadedFont.familyName)
+					$("head").prepend("<style>@font-face {\n   font-family: '"+loadedFont.familyName+"';\n   src: url('"+loadedFont.fontData+"') format('truetype');\n}\n."+loadedFont.familyName+" { font-family: '"+loadedFont.familyName+"'; font-size: 1.1em;}\n</style>");
+					fontSources[loadedFont.familyName] = loadedFont.fontData;
+					var style = loadedFont.familyName;
+					var font_family = $("."+style).css("font-family");
+					var optgroup = $("<optgroup class='"+loadedFont.familyName+"'>");
+					optgroup.append("<option value='"+loadedFont.familyName+"'>"+loadedFont.fontName+"</option>")
+					$("#fontTypeCombo").append(optgroup)
+					customFonts.push(loadedFont)
+				}	
+			}
+			const selectedFont = (validFonts.includes(data.selectedFont)) ? data.selectedFont : "Graduate";
 			var anyTextVisible = false;
 			textureFJS.clear();
 			logoCanvas.clear();
@@ -2428,7 +2438,7 @@
 				
 			})
 			logoCanvas.loadFromJSON(data.canvas.logo, logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
-				console.log(object.id +  " " + object.type + " " + object.visible)
+				//console.log(object.id +  " " + object.type + " " + object.visible)
 				$("#"+object.id+"Check").prop("checked",object.visible)
 				if (object.id == 'eyeletGroup') {
 					object.getObjects().forEach(function(o) {
@@ -2445,41 +2455,79 @@
 					$("#makersMarkCheck").prop("checked",object.visible)
 				}
 				if (object.id == 'textLogo') {
-					console.log(object._objects[0].fontFamily)
+					$("#capText").val(object._objects[0].text)
+					$("#capLogoStroke2Color").spectrum("set",object._objects[0].fill)
+					$("#capLogoStroke1Color").spectrum("set",object._objects[1].fill)
+					$("#capLogoTextColor").spectrum("set",object._objects[2].fill)
 					if (object.visible) {
+						$("#capText").prop("disabled",false)
 						anyTextVisible = true;
 						$(".textToggle").each(function() {
 							$(this).prop("disabled",false);
 						}) 
 					} else {
+						$("#capText").prop("disabled",true)
 						$(".textToggle").each(function() {
 							$(this).prop("disabled",true);
 						}) 
 					}
 				}
 				if (object.id == 'textLogo2') {
+					$("#capText2").val(object._objects[0].text)
+					$("#capLogo2Stroke2Color").spectrum("set",object._objects[0].fill)
+					$("#capLogo2Stroke1Color").spectrum("set",object._objects[1].fill)
+					$("#capLogo2TextColor").spectrum("set",object._objects[2].fill)
 					if (object.visible) {
+						$("#capText2").prop("disabled",false)
 						anyTextVisible = true;
 						$(".text2Toggle").each(function() {
 							$(this).prop("disabled",false);
 						}) 
 					} else {
+						$("#capText").prop("disabled",true)
 						$(".text2Toggle").each(function() {
 							$(this).prop("disabled",true);
 						}) 
 					}
 				}
-				//if (object.id == 'makersMark2') {
-				//	var obj = makersMark2.getObjects().find(o => o.id === 'logo_47brand');
-				//	console.log(obj.fill)
-				//	$("#makersMarkColor").spectrum("set", obj.fill)
-				//}
-				//if (object.id == 'makersMark') {
-				//	$("#"+object.id+"Check").prop("checked",object.visible)
-				//}
+				
 				logoCanvas.add(object)
 			})
+		
+			var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
+			g.getObjects().forEach(function(o) {
+				var myfont = new FontFaceObserver(data.selectedFont)
+				myfont.load()
+					.then(function() {
+					// when font is loaded, use it.
+						o.set({
+							"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
+						})
+						logoCanvas.renderAll();
+					}).catch(function(e) {
+						console.log(e)
+						//alert('font loading failed ' + data.familyName);
+					});
+			})
+
+			var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
+			g.getObjects().forEach(function(o) {
+				var myfont = new FontFaceObserver(data.selectedFont)
+				myfont.load()
+					.then(function() {
+					// when font is loaded, use it.
+						o.set({
+							"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
+						})
+						logoCanvas.renderAll();
+					}).catch(function(e) {
+						console.log(e)
+						//alert('font loading failed ' + data.familyName);
+					});
+			})
 			
+			below.renderAll()
+			$("#fontTypeCombo").val(selectedFont).trigger('change')
 			$("#textureSelect").trigger("change")
 			
 			if (anyTextVisible == true) {
@@ -2583,12 +2631,10 @@
 			type: "GET",
 			url: "http://127.0.0.1:"+port+"/customFont",
 			success: function(data) {
-				//console.log(data)
+				customFonts.push(data)
 				$("head").prepend("<style>@font-face {\n   font-family: '"+data.familyName+"';\n   src: url('"+data.fontData+"') format('truetype');\n}\n."+data.familyName+" { font-family: '"+data.familyName+"'; font-size: 1.1em;}\n</style>");
 				var style = data.familyName;
-				console.log(style)
 				var font_family = $("."+style).css("font-family");
-				console.log(font_family)
 				var objects = logoCanvas.getObjects("group");
 				var myfont = new FontFaceObserver(data.familyName)
 				myfont.load()

@@ -15,7 +15,7 @@ const ttfInfo = require('ttfinfo');
 const url = require('url');
 const isMac = process.platform === 'darwin'
 const archiver = require('archiver')
-
+const font2base64 = require("node-font2base64")
 
 const template = [
 // { role: 'appMenu' }
@@ -369,12 +369,9 @@ app2.get("/customFont", (req, res) => {
 		if(!result.canceled) {
 			ttfInfo(result.filePaths[0], function(err, info) {
 			var ext = getExtension(result.filePaths[0])
-				//var buff = fs.readFileSync(result.filePaths[0]);
-				//console.log(tempDir)
+				const dataUrl = font2base64.encodeToDataUrlSync(result.filePaths[0])
 				var fontPath = url.pathToFileURL(tempDir + '/'+path.basename(result.filePaths[0]))
-				//console.log(fontPath.href)
 				fs.copyFile(result.filePaths[0], tempDir + '/'+path.basename(result.filePaths[0]), (err) => {
-				//fs.copyFile(result.filePaths[0], path.join(app.getAppPath(), 'resources', 'app', 'fonts', path.basename(result.filePaths[0])), (err) => {
 					if (err) {
 						console.log(err)
 					} else {
@@ -384,7 +381,8 @@ app2.get("/customFont", (req, res) => {
 							"familyName": info.tables.name[6],
 							"fontFormat": ext,
 							"fontMimetype": 'font/' + ext,
-							"fontData": fontPath.href
+							"fontData": fontPath.href,
+							"fontBase64": dataUrl
 						});
 						res.end()
 					}
