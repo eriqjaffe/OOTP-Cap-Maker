@@ -24,6 +24,13 @@
 	<script>
 		const params = new URLSearchParams(window.location.search)
 		const port = params.get('port')
+		const prefColorFormat = params.get('preferredColorFormat')
+		const prefTexture = params.get('preferredTexture')
+		var defaultTexture = prefTexture+".png";
+		var customTextureBase = ""
+
+		console.log(prefColorFormat)
+		console.log(defaultTexture)
 
 		const initialColors = {capColor:"#c6011f",underBrimColor:"#656765",topsideBrimColor:"#1d1654",squatcheeColor:"yellow",frontPanelColor:"#FFFFFF",smallFrontPanelColor:"yellow",pinstripeColor:"blue",pinstripe2Color:"cyan", horizontalPinstripeColor:"yellow",capLogoTextColor:"white",capLogoStroke1Color:"green",capLogoStroke2Color:"black",capLogo2TextColor:"white",capLogo2Stroke1Color:"green",capLogo2Stroke2Color:"black",bandBoxSingleThickColor:"orange",bandBoxDoubleThickColor:"greenyellow",jockeyColor:"brown",braidStripeInnerColor:"red",braidStripeOuterColor:"blue",frontPanelBorderColor:"cyan",bostonColor:"yellowgreen",smallPanelBorderColor:"cyan",curvedBrimColor:"cyan",curvedBrimBorderColor:"blue",peakBandColor:"orange",stingyBrimColor:"red",lidPinstripesColor:"blue",stingyLidPinstripesColor:"yellow",eyeletFillColor:"black",eyeletStrokeColor:"yellow",snakeskinColor:"#000000",scrambledEggColor:"#FED141",makersMarkColor:"#FFFFFF"}
 		const capLeftX = 211.25;
@@ -33,11 +40,11 @@
 		const capRightY = 452.25;
 		const capRightA = 111.18174681139828;
 		var base_color, underBrimColor, topsideBrimColor, squatcheeColor;
-		var defaultTexture = "texture.png";
-		var prefColorFormat = $.localStorage.getItem('capmaker.color_format');
+		//var defaultTexture = "texture.png";
+/* 		var prefColorFormat = $.localStorage.getItem('capmaker.color_format');
 		if (!prefColorFormat) {
 			prefColorFormat = "hex";
-		}
+		} */
 		//var logosArr = ["47brand","adidas","adidas_2","adidas_3","asics","asics2","bauer","ccm","ccm_2","ccm_3","demarini","easton","koho","lutch","macron","macron2","majestic","majestic_2","maxim","mizuno","newera","new_balance","nike","oneill","proplayer","puma","rawlings","rawlings_2","rbk","rbk_2","reebok","russell","russell_2","spalding","spalding_2","ssk","umbro","under_armour","wilson"]
 		const logosArr = [{"name":"logo_47brand","height":"24"},{"name":"logo_adidas_3","height":"24"},{"name":"logo_asics2","height":"24"},{"name":"logo_demarini","height":"24"},{"name":"logo_macron2","height":"24"},{"name":"logo_majestic","height":"24"},{"name":"logo_majestic_2","height":"24"},{"name":"logo_mizuno","height":"24"},{"name":"logo_new_balance","height":"24"},{"name":"logo_newera","height":"24"},{"name":"logo_nike","height":"15"},{"name":"logo_oneill","height":"12"},{"name":"logo_rawlings_2","height":"24"},{"name":"logo_rbk","height":"22"},{"name":"logo_russell_2","height":"24"},{"name":"logo_spalding_2","height":"24"},{"name":"logo_under_armour","height":"24"},{"name":"logo_wilson","height":"24"}]
 		var validFonts = ['Acme','AthleticGothic','AthleticGothicShadow','BeavertonScript','Berkshire_Swash','Cantora_One','CaxtonRoman','Chela_One','Circus','Condiment','Cookie','Courgette','Croissant_One','Damion','Engagement','RawlingsFancyBlock','Germania_One','Graduate','Grand_Hotel','Jockey_One','Kansas','Kaushan_Script','Leckerli_One','Lily_Script_One','Lobster','Lobster_Two','Metal_Mania','Miniver','Molle','New_Rocker','Norican','OldEnglish','Oleo_Script','Oleo_Script_Swash_Caps','Pacifico','Pirata_One','Playball','ProFullBlock','RichardsonFancyBlock','Rubik_One','Rum_Raisin','Satisfy','Seymour_One','spl28','TiffanyRegular','Trade_Winds','Tuscan','UnifrakturCook','UnifrakturMaguntia','Vibur','Viga','Wellfleet','Wendy_One','Yellowtail']
@@ -128,7 +135,7 @@
 											<option value="wool.png">Wool</option>
 											<option value="knit.png">Knit</option>
 											<option value="mesh.png">Mesh</option>
-											<option id="customTexture" value="">Custom</option>
+											<option id="customTexture" value="custom">Custom</option>
 										</select>
 										<input type="file" id="uploadedTexture" accept="image/png" style="display:none;"/>
 									</td>
@@ -572,10 +579,22 @@
 									<td class="checkCell">&nbsp;</td>
 									<td>Preferred Color Format:</td>
 									<td style="text-align:right;">
-										<select id="colorFormat" style="width:100px;">
+										<select class='preferenceSelect' id="preferredColorFormat" style="width:100px;">
 											<option value="hex">Hex</option>
 											<option value="rgb">RGB</option>
 											<option value="hsl">HSL</option>
+										</select>
+									</td>
+									<td class="checkCell">&nbsp;</td>
+									<td>Preferred Texture:</td>
+									<td style="text-align:right;">
+										<select class='preferenceSelect' id="preferredTexture" style="width:100px;">
+											<option value="texture">Default</option>
+											<option value="mottled">Mottled</option>
+											<option value="texture3">Gern44</option>
+											<option value="wool">Wool</option>
+											<option value="knit">Knit</option>
+											<option value="mesh">Mesh</option>
 										</select>
 									</td>
 								</tr>
@@ -645,10 +664,6 @@
 	var can4 = document.getElementById('above');
 	var logos = can4.getContext('2d');
 
-	//var can5 = document.getElementById('guides')
-	//var guides = can5.getContext('2d');
-	
-	//var below = new fabric.StaticCanvas('below',{backgroundColor:initialColors["capColor"]});
 	var below = new fabric.StaticCanvas('below',{enableRetinaScaling:false});
 	
 	var textureFJS = new fabric.Canvas('fabricTexture',{enableRetinaScaling:false});
@@ -659,6 +674,9 @@
 	logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
 
 	$(document).ready(function() {
+		$("#textureSelect").val(defaultTexture)
+		$("#preferredColorFormat").val(prefColorFormat)
+		$("#preferredTexture").val(prefTexture)
 		$(".accordion .accord-header").click(function() {
 			if($(this).next("div").is(":visible")){
 				$(this).next("div").slideUp("fast");
@@ -703,12 +721,24 @@
 		})
 	});
 	
-	$("#colorFormat").on("change",function(e) {
+/* 	$("#colorFormat").on("change",function(e) {
 		$.localStorage.setItem('capmaker.color_format', $(this).val());
 		$("#capColor").spectrum("option", "preferredFormat", $(this).val());
 		$(".selector").spectrum("option", "preferredFormat", $(this).val());
 		$(".colorSelector").spectrum("option", "preferredFormat", $(this).val());
-	});
+	}); */
+
+	$(".preferenceSelect").on("change",function(e) {
+		const pref = $(this).attr("id")
+		const val = $(this).val()
+		$.ajax({
+			type: "POST",
+			url: "http://127.0.0.1:"+port+"/setPreference",
+			data: {pref:pref,val:val},
+			success: function(result) {
+			}
+		})
+	})
 	
 	initializeCanvas();
 	
@@ -1404,6 +1434,7 @@
 		exportMeta.makersMarkFill = $("#makersMarkColor").spectrum("get").toHexString()
 		exportMeta.selectedFont = $("#fontTypeCombo").val()
 		exportMeta.customFonts = customFonts;
+		exportMeta.customTexture = customTextureBase;
 
 		const jsonExport = {
 			'below': below.toJSON(['id','visible','selectable','perPixelTargetFind','centeredScaling','centeredRotation','borderColor','cornerColor','cornerSize','name','transparentCorners']),
@@ -1464,9 +1495,12 @@
 	})
 	
 	$("#clearTexture").on("click", function() {
-		$("#customTexture").val("");
-		defaultTexture = "./images/texture.png";
-		$("#textureSelect").val("texture.png")
+		var tmp = $("#textureSelect").val()
+		$("#customTexture").val("custom");
+		customTextureBase = ''
+		defaultTexture = prefTexture+".png";
+		console.log($("#textureSelect").val())
+		$("#textureSelect").val(defaultTexture)
 		below.renderAll()
 		texture.clearRect(0, 0, 512, 512);
 		reRenderBG();
@@ -1647,14 +1681,30 @@
 	} */
 	
 	$("#textureSelect").on("change",function() {
-		if ($(this).val() != "") {
-			defaultTexture = $(this).val();
-			texture.clearRect(0, 0, 512, 512);
-			reRenderBG();
-		} else {
-			$("#uploadedTexture").click();
+		switch ($(this).val()) {
+			case null:
+				defaultTexture = customTextureBase
+				texture.clearRect(0, 0, 512, 512);
+				reRenderBG();
+				$("#clearTexture").css("display","none");
+				break;
+			case "custom":
+				if (customTextureBase == "") {
+					$("#uploadedTexture").click();
+				} else {
+					defaultTexture = customTextureBase
+					texture.clearRect(0, 0, 512, 512);
+					reRenderBG();
+				}
+				$("#clearTexture").css("display","inline-block");
+				break;
+			default:
+				defaultTexture = $(this).val();
+				texture.clearRect(0, 0, 512, 512);
+				reRenderBG();
+				$("#clearTexture").css("display","none");
+				break;
 		}
-
 	})
 	
 	$("#fakeImageButton").on("click",function() {
@@ -1729,9 +1779,11 @@
 			}
 		};
 		if (defaultTexture.indexOf(".png") > -1) {
+			//console.log(defaultTexture)
 			img.src = "./images/"+defaultTexture;
 		} else {
-			img.src = defaultTexture;
+			//console.log(customTextureBase)
+			img.src = customTextureBase;
 		}
 		
 		var objects = textureFJS.getObjects();
@@ -2211,13 +2263,14 @@
 			imgObj.src = event.target.result;
 			imgObj.onload = function () {
 				fabric.Image.fromURL(imgObj.src, function(img) {
-					$("#customTexture").val(imgObj.src);
+					customTextureBase = imgObj.src
+					$("#customTexture").val("custom");
 					defaultTexture = imgObj.src;
 					below.renderAll();
+					defaultTexture = imgObj.src;
+					texture.clearRect(0, 0, 512, 512);
+					reRenderBG();
 				})
-				defaultTexture = imgObj.src;
-				texture.clearRect(0, 0, 512, 512);
-				reRenderBG();
 			}
 		}
 		
@@ -2398,6 +2451,8 @@
 			customFonts.splice(0, customFonts.length)
 			const data = JSON.parse(fileReader.result)
 			//console.log(data)
+			customTextureBase = data.customTexture;
+			//console.log(customTextureBase)
 			$("#teamName").val(data.team)
 			$("#startYear").val(data.start)
 			$("#endYear").val(data.end)
@@ -2528,7 +2583,15 @@
 			
 			below.renderAll()
 			$("#fontTypeCombo").val(selectedFont).trigger('change')
-			$("#textureSelect").trigger("change")
+
+			if (data.texture == "custom") {
+				$("#clearTexture").css("display","inline-block");
+				$("#textureSelect").val(null)
+				$("#textureSelect").trigger("change")	
+			} else {
+				$("#textureSelect").trigger("change")	
+			}
+			$("#textureSelect").val(data.texture)		
 			
 			if (anyTextVisible == true) {
 				$("#fontTypeCombo").prop("disabled",false);
@@ -2541,29 +2604,6 @@
 					$(this).prop("disabled",true);
 				})
 			}
-
-		/*	customFonts.splice(0, customFonts.length)
-			below.clear()
-			var data = fileReader.result;  // data <-- in this var you have the file data in Base64 format
-			const tmp = JSON.parse(data)
-			const newBG = tmp.background;
-			if (tmp.customFonts.length > 0) {
-				for (x in tmp.customFonts) {
-					const loadedFont = tmp.customFonts[x]
-					validFonts.push(loadedFont.familyName)
-					$("head").prepend("<style>@font-face {\n   font-family: '"+loadedFont.familyName+"';\n   src: url('"+loadedFont.fontData+"') format('truetype');\n}\n."+loadedFont.familyName+" { font-family: '"+loadedFont.familyName+"'; font-size: 1.1em;}\n</style>");
-					fontSources[loadedFont.familyName] = loadedFont.fontData;
-					var style = loadedFont.familyName;
-					var font_family = $("."+style).css("font-family");
-					var optgroup = $("<optgroup class='"+loadedFont.familyName+"'>");
-					optgroup.append("<option value='"+loadedFont.familyName+"'>"+loadedFont.fontName+"</option>")
-					$("#fontTypeCombo").append(optgroup)
-					customFonts.push(loadedFont)
-				}	
-			}
-			const selectedFont = (validFonts.includes(tmp.selectedFont)) ? tmp.selectedFont : "Rubik_One";
-			var wordmarkVisible = null;
-			*/
 			reRenderBG()
 		}
     	fileReader.readAsText($(this).prop('files')[0]);

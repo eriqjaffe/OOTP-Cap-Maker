@@ -16,6 +16,7 @@ const url = require('url');
 const isMac = process.platform === 'darwin'
 const archiver = require('archiver')
 const font2base64 = require("node-font2base64")
+const Store = require("electron-store")
 
 const template = [
 // { role: 'appMenu' }
@@ -102,6 +103,11 @@ Menu.setApplicationMenu(menu)
 const server = app2.listen(0, () => {
 	console.log(`Server running on port ${server.address().port}`);
 });
+
+const store = new Store();
+
+const preferredColorFormat = store.get("preferredColorFormat", "hex")
+const preferredTexture = store.get("preferredTexture", "texture")
 
 app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
 
@@ -387,25 +393,19 @@ app2.get("/customFont", (req, res) => {
 						res.end()
 					}
 				})
-				/* fs.writeFile(__dirname + '/fonts/'+path.basename(result.filePaths[0]), buff, function (err) {
-					if (err) return console.log(err);
-					res.json({
-						"fontName": info.tables.name[1],
-						"fontStyle": info.tables.name[2],
-						"familyName": info.tables.name[6],
-						"fontFormat": ext,
-						"fontMimetype": 'font/' + ext,
-						"fontData": 'data:'+'font/' + ext+';charset=ascii;base64,' + buff.toString('base64')
-					});
-				  });
-				
-			res.end() */
 			});
 		}
 	}).catch(err => {
 		console.log(err)
 	})
 })
+
+app2.post('/setPreference', (req, res) => {
+	const pref = req.body.pref;
+	const val = req.body.val;
+	store.set(pref, val)
+	res.end()
+});
 
 function getExtension(filename) {
 	var ext = path.extname(filename||'').split('.');
@@ -426,7 +426,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html?port=${server.address().port}`);
+  mainWindow.loadURL(`file://${__dirname}/index.html?port=${server.address().port}&preferredColorFormat=${preferredColorFormat}&preferredTexture=${preferredTexture}`);
 
   mainWindow.webContents.on('new-window', function(e, url) {
 	e.preventDefault();
