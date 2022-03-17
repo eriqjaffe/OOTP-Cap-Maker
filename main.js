@@ -18,88 +18,6 @@ const archiver = require('archiver')
 const font2base64 = require("node-font2base64")
 const Store = require("electron-store")
 
-const template = [
-// { role: 'appMenu' }
-...(isMac ? [{
-	label: app.name,
-	submenu: [
-	{ role: 'about' },
-	{ type: 'separator' },
-	{ role: 'services' },
-	{ type: 'separator' },
-	{ role: 'hide' },
-	{ role: 'hideOthers' },
-	{ role: 'unhide' },
-	{ type: 'separator' },
-	{ role: 'quit' }
-	]
-}] : []),
-// { role: 'fileMenu' }
-{
-	label: 'File',
-	submenu: [
-	isMac ? { role: 'close' } : { role: 'quit' }
-	]
-},
-// { role: 'viewMenu' }
-{
-	label: 'View',
-	submenu: [
-	{ role: 'reload' },
-	{ role: 'forceReload' },
-	{ role: 'toggleDevTools' },
-	{ type: 'separator' },
-	{ role: 'resetZoom' },
-	{ role: 'zoomIn' },
-	{ role: 'zoomOut' },
-	{ type: 'separator' },
-	{ role: 'togglefullscreen' }
-	]
-},
-// { role: 'windowMenu' }
-{
-	label: 'Window',
-	submenu: [
-	{ role: 'minimize' },
-	{ role: 'zoom' },
-	...(isMac ? [
-		{ type: 'separator' },
-		{ role: 'front' },
-		{ type: 'separator' },
-		{ role: 'window' }
-	] : [
-		{ role: 'close' }
-	])
-	]
-},
-{
-	role: 'help',
-	submenu: [
-	{
-		label: 'About Node.js',
-		click: async () => {    
-		await shell.openExternal('https://nodejs.org/en/about/')
-		}
-	},
-	{
-		label: 'About Electron',
-		click: async () => {
-		await shell.openExternal('https://electronjs.org')
-		}
-	},
-	{
-		label: 'View project on GitHub',
-		click: async () => {
-		await shell.openExternal('https://github.com/eriqjaffe/OOTP-Cap-Maker')
-		}
-	}
-	]
-}
-]
-
-const menu = Menu.buildFromTemplate(template)
-Menu.setApplicationMenu(menu)
-
 const server = app2.listen(0, () => {
 	console.log(`Server running on port ${server.address().port}`);
 });
@@ -110,6 +28,17 @@ const preferredColorFormat = store.get("preferredColorFormat", "hex")
 const preferredTexture = store.get("preferredTexture", "texture")
 
 app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
+
+app2.get("/uploadCap", (req, res) => {
+	console.log("got this far")
+	const file = dialog.showOpenDialogSync(null, {
+		properties: ['openFile'],
+		filters: [
+			{ name: 'Ballcap Files', extensions: ['cap'] }
+		]
+	})
+	res.end(file[0])
+})
 
 app2.get("/uploadImage", (req, res) => {
 	dialog.showOpenDialog(null, {
@@ -421,9 +350,96 @@ function createWindow () {
     height: 760,
 	icon: (__dirname + '/images/ballcap.png'),
     webPreferences: {
+		nodeIntegration: true,
+	  	contextIsolation: false
       //preload: path.join(__dirname, 'preload.js')
     }
   })
+  const template = [
+	// { role: 'appMenu' }
+	...(isMac ? [{
+		label: app.name,
+		submenu: [
+		{ role: 'about' },
+		{ type: 'separator' },
+		{ role: 'services' },
+		{ type: 'separator' },
+		{ role: 'hide' },
+		{ role: 'hideOthers' },
+		{ role: 'unhide' },
+		{ type: 'separator' },
+		{ role: 'quit' }
+		]
+	}] : []),
+	// { role: 'fileMenu' }
+	{
+		label: 'File',
+		submenu: [
+		{
+			click: () => mainWindow.webContents.send('load-cap','click'),
+			label: 'Load Cap',
+		},
+		isMac ? { role: 'close' } : { role: 'quit' }
+		]
+	},
+	// { role: 'viewMenu' }
+	{
+		label: 'View',
+		submenu: [
+		{ role: 'reload' },
+		{ role: 'forceReload' },
+		{ role: 'toggleDevTools' },
+		{ type: 'separator' },
+		{ role: 'resetZoom' },
+		{ role: 'zoomIn' },
+		{ role: 'zoomOut' },
+		{ type: 'separator' },
+		{ role: 'togglefullscreen' }
+		]
+	},
+	// { role: 'windowMenu' }
+	{
+		label: 'Window',
+		submenu: [
+		{ role: 'minimize' },
+		{ role: 'zoom' },
+		...(isMac ? [
+			{ type: 'separator' },
+			{ role: 'front' },
+			{ type: 'separator' },
+			{ role: 'window' }
+		] : [
+			{ role: 'close' }
+		])
+		]
+	},
+	{
+		role: 'help',
+		submenu: [
+		{
+			label: 'About Node.js',
+			click: async () => {    
+			await shell.openExternal('https://nodejs.org/en/about/')
+			}
+		},
+		{
+			label: 'About Electron',
+			click: async () => {
+			await shell.openExternal('https://electronjs.org')
+			}
+		},
+		{
+			label: 'View project on GitHub',
+			click: async () => {
+			await shell.openExternal('https://github.com/eriqjaffe/OOTP-Cap-Maker')
+			}
+		}
+		]
+	}
+	]
+	
+	const menu = Menu.buildFromTemplate(template)
+	Menu.setApplicationMenu(menu)
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html?port=${server.address().port}&preferredColorFormat=${preferredColorFormat}&preferredTexture=${preferredTexture}`);
@@ -438,25 +454,14 @@ function createWindow () {
    	mainWindow.webContents.openDevTools()
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  	createWindow()
 
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
+  	app.on('activate', function () {
+    	if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  	})
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
