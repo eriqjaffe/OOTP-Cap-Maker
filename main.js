@@ -30,15 +30,12 @@ const preferredTexture = store.get("preferredTexture", "texture")
 app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
 
 app2.get("/uploadCap", (req, res) => {
-	console.log("got this far")
 	const file = dialog.showOpenDialogSync(null, {
 		properties: ['openFile'],
 		filters: [
 			{ name: 'Ballcap Files', extensions: ['cap'] }
 		]
 	})
-	//const foo = fs.readFileSync(file[0])
-	//const foo2 = JSON.parse(fs.readFileSync(file[0]).toString())
 	res.end(JSON.stringify(JSON.parse(fs.readFileSync(file[0]).toString())))
 })
 
