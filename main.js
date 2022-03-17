@@ -378,6 +378,10 @@ function createWindow () {
 			click: () => mainWindow.webContents.send('load-cap','click'),
 			label: 'Load Cap',
 		},
+		{
+			click: () => mainWindow.webContents.send('save-cap','click'),
+			label: 'Save Cap',
+		},
 		isMac ? { role: 'close' } : { role: 'quit' }
 		]
 	},
@@ -415,6 +419,16 @@ function createWindow () {
 	{
 		role: 'help',
 		submenu: [
+		{
+			click: () => mainWindow.webContents.send('about','click'),
+				label: 'About the OOTP Cap Maker',
+		},
+		{
+			label: 'About OOTP Baseball',
+			click: async () => {    
+			await shell.openExternal('https://www.ootpdevelopments.com/out-of-the-park-baseball-home/')
+			}
+		},
 		{
 			label: 'About Node.js',
 			click: async () => {    
