@@ -37,7 +37,9 @@ app2.get("/uploadCap", (req, res) => {
 			{ name: 'Ballcap Files', extensions: ['cap'] }
 		]
 	})
-	res.end(file[0])
+	//const foo = fs.readFileSync(file[0])
+	//const foo2 = JSON.parse(fs.readFileSync(file[0]).toString())
+	res.end(JSON.stringify(JSON.parse(fs.readFileSync(file[0]).toString())))
 })
 
 app2.get("/uploadImage", (req, res) => {

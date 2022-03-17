@@ -2450,10 +2450,11 @@
 			type: "GET",
 			url: "http://127.0.0.1:"+port+"/uploadCap",
 			success: function(response) {
-				var fileReader = new FileReader();
-				fileReader.onload = function () {
+				console.log(response)
+				//var fileReader = new FileReader();
+				//fileReader.onload = function () {
 					customFonts.splice(0, customFonts.length)
-					const data = JSON.parse(fileReader.result)
+					const data = JSON.parse(response)
 					//console.log(data)
 					customTextureBase = data.customTexture;
 					//console.log(customTextureBase)
@@ -2609,8 +2610,8 @@
 						})
 					}
 					reRenderBG()
-				}
-				fileReader.readAsText(response);
+				//}
+				//fileReader.readAsText(response);
 			}
 		});
 	})
