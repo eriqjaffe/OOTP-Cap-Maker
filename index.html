@@ -42,12 +42,6 @@
 		const capRightY = 452.25;
 		const capRightA = 111.18174681139828;
 		var base_color, underBrimColor, topsideBrimColor, squatcheeColor;
-		//var defaultTexture = "texture.png";
-/* 		var prefColorFormat = $.localStorage.getItem('capmaker.color_format');
-		if (!prefColorFormat) {
-			prefColorFormat = "hex";
-		} */
-		//var logosArr = ["47brand","adidas","adidas_2","adidas_3","asics","asics2","bauer","ccm","ccm_2","ccm_3","demarini","easton","koho","lutch","macron","macron2","majestic","majestic_2","maxim","mizuno","newera","new_balance","nike","oneill","proplayer","puma","rawlings","rawlings_2","rbk","rbk_2","reebok","russell","russell_2","spalding","spalding_2","ssk","umbro","under_armour","wilson"]
 		const logosArr = [{"name":"logo_47brand","height":"24"},{"name":"logo_adidas_3","height":"24"},{"name":"logo_asics2","height":"24"},{"name":"logo_demarini","height":"24"},{"name":"logo_macron2","height":"24"},{"name":"logo_majestic","height":"24"},{"name":"logo_majestic_2","height":"24"},{"name":"logo_mizuno","height":"24"},{"name":"logo_new_balance","height":"24"},{"name":"logo_newera","height":"24"},{"name":"logo_nike","height":"15"},{"name":"logo_oneill","height":"12"},{"name":"logo_rawlings_2","height":"24"},{"name":"logo_rbk","height":"22"},{"name":"logo_russell_2","height":"24"},{"name":"logo_spalding_2","height":"24"},{"name":"logo_under_armour","height":"24"},{"name":"logo_wilson","height":"24"}]
 		var validFonts = ['Acme','AthleticGothic','AthleticGothicShadow','BeavertonScript','Berkshire_Swash','Cantora_One','CaxtonRoman','Chela_One','Circus','Condiment','Cookie','Courgette','Croissant_One','Damion','Engagement','RawlingsFancyBlock','Germania_One','Graduate','Grand_Hotel','Jockey_One','Kansas','Kaushan_Script','Leckerli_One','Lily_Script_One','Lobster','Lobster_Two','Metal_Mania','Miniver','Molle','New_Rocker','Norican','OldEnglish','Oleo_Script','Oleo_Script_Swash_Caps','Pacifico','Pirata_One','Playball','ProFullBlock','RichardsonFancyBlock','Rubik_One','Rum_Raisin','Satisfy','Seymour_One','spl28','TiffanyRegular','Trade_Winds','Tuscan','UnifrakturCook','UnifrakturMaguntia','Vibur','Viga','Wellfleet','Wendy_One','Yellowtail']
 		var fontSources = {Acme: "Acme-Regular.ttf",athletic_gothicregular: "athletic_gothic-webfont.ttf",athletic_gothic_shadowregular: "athletic_gothic_shadow-webfont.ttf",beaverton_scriptregular: "beaverton_script-webfont.ttf",'"Berkshire Swash"': "BerkshireSwash-Regular.ttf",'"Cantora One"': "CantoraOne-Regular.ttf",caxton_romanregular: "caxton_roman-webfont.ttf",'"Chela One"': "ChelaOne-Regular.ttf",russell_circusregular: "circus-webfont.ttf",Condiment: "Condiment-Regular.ttf",Cookie: "Cookie-Regular.ttf",Courgette: "Courgette-Regular.ttf",'"Croissant One"': "CroissantOne-Regular.ttf",Damion: "Damion-Regular.ttf",Engagement: "Engagement-Regular.ttf",rawlings_fancy_blockregular: "rawlingsfancyblock-regular-webfont.ttf",'"Germania One"': "GermaniaOne-Regular.ttf",Graduate: "Graduate-Regular.ttf",'"Grand Hotel"': "GrandHotel-Regular.ttf",'"Jockey One"': "JockeyOne-Regular.ttf",kansasregular: "tuscan-webfont.ttf",'"Kaushan Script"': "KaushanScript-Regular.ttf",'"Leckerli One"': "LeckerliOne-Regular.ttf",'"Lily Script One"': "LilyScriptOne-Regular.ttf",Lobster: "Lobster-Regular.ttf",'"Lobster Two"': "LobsterTwo-Regular.ttf",'"Metal Mania"': "MetalMania-Regular.ttf",Miniver: "Miniver-Regular.ttf",'Molle,italic': "Molle-Regular.ttf",'"New Rocker"': "NewRocker-Regular.ttf",Norican: "Norican-Regular.ttf",rawlings_old_englishmedium: "rawlingsoldenglish-webfont.ttf",'"Oleo Script"': "OleoScript-Regular.ttf",'"Oleo Script Swash Caps"': "OleoScriptSwashCaps-Regular.ttf",Pacifico: "Pacifico.ttf",'"Pirata One"': "PirataOne-Regular.ttf",Playball: "Playball-Regular.ttf",pro_full_blockregular: "pro_full_block-webfont.ttf",richardson_fancy_blockregular: "richardson_fancy_block-webfont.ttf",'"Rubik One"': "RubikOne-Regular.ttf",'"Rum Raisin"': "RumRaisin-Regular.ttf",Satisfy: "Satisfy-Regular.ttf",'"Seymour One"': "SeymourOne-Regular.ttf",spl28scriptregular: "spl28script-webfont.ttf",ua_tiffanyregular: "tiffany-webfont.ttf",'"Trade Winds"': "TradeWinds-Regular.ttf",mlb_tuscan_newmedium: "mlb_tuscan_new-webfont.ttf",UnifrakturCook: "UnifrakturCook-Bold.ttf",UnifrakturMaguntia: "UnifrakturMaguntia-Book.ttf",Vibur: "Vibur-Regular.ttf",Viga: "Viga-Regular.ttf",Wellfleet: "Wellfleet-Regular.ttf",'"Wendy One"': "WendyOne-Regular.ttf",Yellowtail: "Yellowtail-Regular.ttf"};
@@ -55,14 +49,6 @@
 		var customFonts = [];
 		var exportMeta = {}
 	</script>
-    <!--[if IE]>
-      <style type="text/css">
-        #overlay {
-          filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='sample_600x600.png', sizingMethod='scale');
-          background:none !important;
-        }
-        </style>
-    <![endif]-->
 </head>
 <body>
 <div class="title">
@@ -936,10 +922,6 @@
 					o.set("fill", color.toHexString())
 					makersMark2.dirty = true;
 				})
-				//makersMark2.getObjects().forEach(function (o) {
-				//	o.set("fill", color.toHexString());
-				//})
-				//makersMark.setFill(color.toHexString());
 				logoCanvas.renderAll();
 			},
 			change: function(color) {
@@ -978,13 +960,6 @@
 			}
 			makersMark2.dirty = true;
 		})
-		/* makersMark2.getObjects().forEach(function(o) {
-			if (o.id == id) {
-				o.set("visible", true)
-			} else {
-				o.set("visible", false)
-			}
-		}) */
 		logoCanvas.renderAll();
 	})
 
@@ -1364,7 +1339,6 @@
 		logoCanvas.add(scrambledEggColor);
 
 		makersMark2 = new fabric.Group([], {
-			//data-top="352.25" data-left="211.25" data-angle="184.33062880747013" data-height="24" data-original-angle="184.33062880747013"
 			id: 'makersMark2',
 			visible: false,
 			left: 211.25,
@@ -1473,7 +1447,6 @@
 		} else {
 			teamName = $("#teamName").val().replace(/[|&;$%@"<>()+,]/g, "");
 		}
-		//teamName = teamName.replace(/([^a-zA-Z0-9]+)/g, "_");
 		teamName = teamName.split(' ').join('_');
 		var fileName = "caps_"+teamName+"_"+$("#capType").val()+yearRange;
 		logoCanvas.setOverlayImage(null, logoCanvas.renderAll.bind(logoCanvas));
@@ -1492,8 +1465,7 @@
 
 			}
 		})
-		//var foo = new CanvasSaver('http://127.0.0.1:'+port+'/savecap').savePNG(document.getElementById("final"), fileName, "cap");
-
+		
 		logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
 	})
 	
@@ -1635,54 +1607,7 @@
 			success: function(data) {}
 		});
 	})
-	
-	/* document.getElementById('uploadedImg').onchange = function handleImage(e) {
-		var reader = new FileReader();
-		reader.onload = function (event) {
-			var imgObj = new Image();
-			imgObj.src = event.target.result;
-			imgObj.onload = function () {
-				// start fabricJS stuff
-				
-				var image = new fabric.Image(imgObj);
-				image.set({
-					originX: 'center',
-					originY: 'center',
-					left: imLeft,
-					top: imTop,
-					perPixelTargetFind: true,
-					centeredScaling: true,
-					centeredRotation: true,
-					name: $("#uploadedImg").val().split('\\').pop(),
-					borderColor: 'red',
-					cornerColor: 'yellow',
-					cornerSize: 12,
-					transparentCorners: false
-				});
-				image.resizeFilters.push(new fabric.Image.filters.Resize({
-					resizeType: 'lanczos', // typo fixed
-					lanczosLobes: 2 // typo fixed
-				}));
-				image.on('object:modified',function() {
-					imLeft = image.get('left')
-					imTop = image.get('top');
-				})
-				var h = image.height;
-				var w = image.width;
-				//if ((h > 300) || (w > 300)) {
-				//	image.scale(0.5);
-				//}
-				logoCanvas.add(image);
-				image.sendBackwards();
-				
-				// end fabricJS stuff
-			}
-			
-		}
-		reader.readAsDataURL(e.target.files[0]);
-		$("#fileName").html($("#uploadedImg").val().split('\\').pop());
-	} */
-	
+
 	$("#textureSelect").on("change",function() {
 		switch ($(this).val()) {
 			case null:
@@ -1718,7 +1643,6 @@
 				var imgObj = new Image();
 				imgObj.src = data;
 				imgObj.onload = function () {
-					// start fabricJS stuff
 					var image = new fabric.Image(imgObj);
 					image.set({
 						originX: 'center',
@@ -1740,14 +1664,9 @@
 					})
 					var h = image.height;
 					var w = image.width;
-					//if ((h > 300) || (w > 300)) {
-					//	image.scale(0.5);
-					//}
 					logoCanvas.add(image);
-					image.sendBackwards();
-					
-					//$("#fileName").html(makeid(10));
-					// end fabricJS stuff
+					image.sendToBack();
+					console.log(logoCanvas)
 				}
 			}
 		});
@@ -1782,10 +1701,8 @@
 			}
 		};
 		if (defaultTexture.indexOf(".png") > -1) {
-			//console.log(defaultTexture)
 			img.src = "./images/"+defaultTexture;
 		} else {
-			//console.log(customTextureBase)
 			img.src = customTextureBase;
 		}
 		
@@ -1894,20 +1811,6 @@
 			$("#capText2").attr("disabled",true);
 		}
 	})
-	
-	// logoCanvas.on('object:selected', function(e) {
-	// 	var obj = e.target;
-	// 	if (obj.get('type') == 'group') {
-	// 		if (obj.get('id')) {
-	// 			$("#tipContainer").html("Use +/- keys to raise/lower text.<br>Use Arrow keys to move text.");
-	// 		} else {
-	// 			$("#tipContainer").html("Use Arrow keys to move 1 pixel.<br>Use Shift+Arrows keys to move 10 pixels.");
-	// 		}
-	// 	}
-	// 	if (obj.get('type') == 'image') {
-	// 		$("#tipContainer").html("Use Arrow keys to move 1 pixel.<br>Use Shift+Arrows keys to move 10 pixels.");
-	// 	}
-	// })
 
 	logoCanvas.on('object:selected', function(e) {
 		$("#straightenObject").css("display","inline-block");
@@ -1979,7 +1882,6 @@
 		if (logoCanvas.getActiveObject()) {
 			var object = logoCanvas.getActiveObject()
 			if (object.get('type') == "image") {
-				//$("#overlay").css("display","inline-block");
 				var pictureName = object.get('name');
 				$("#colorSquare").removeClass("colorSquareActive").removeClass("colorSquareSelected");
 				var theImage = object._originalElement.currentSrc;
@@ -2047,7 +1949,6 @@
 				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();			
 				$.ajax({
 					type: "POST",
-					//url: "./scripts/changecolor.php",
 					url: "http://127.0.0.1:"+port+"/removeAllColor",
 					data: {imgdata: theImage, x: x, y: y, color: color, action: action, fuzz: fuzz, filename: pictureName},
 					success: function(data) {
@@ -2125,7 +2026,6 @@
 					url: "http://127.0.0.1:"+port+"/replaceColor",
 					data: {imgdata: theImage, x: x, y: y, action: action, color: color, newcolor: newcolor, fuzz: fuzz, filename: pictureName},
 					success: function(data) {
-					//$("#testImage").attr("src","data:image/png;base64,"+data);
 						var imgObj = new Image();
 						imgObj.src = data;
 						imgObj.onload = function () {
@@ -2223,12 +2123,6 @@
  			imLeft = obj.get('left');
  			imTop = obj.get('top');
  		}
-		/* if (obj.get('type') == 'path-group') {
-			$("#makersMarkSelect").find(':selected').data('top',obj.get('top'));
-			$("#makersMarkSelect").find(':selected').data('left',obj.get('left'));
-			$("#makersMarkSelect").find(':selected').data('angle',obj.get('angle'));
-			$("#makersMarkSelect").find(':selected').data('height',obj.getHeight());
-		} */
 	})
 
 	logoCanvas.on('selection:cleared', function(e) {
@@ -2449,168 +2343,154 @@
 			type: "GET",
 			url: "http://127.0.0.1:"+port+"/uploadCap",
 			success: function(response) {
-				console.log(response)
-				//var fileReader = new FileReader();
-				//fileReader.onload = function () {
-					customFonts.splice(0, customFonts.length)
-					const data = JSON.parse(response)
-					//console.log(data)
-					customTextureBase = data.customTexture;
-					//console.log(customTextureBase)
-					$("#teamName").val(data.team)
-					$("#startYear").val(data.start)
-					$("#endYear").val(data.end)
-					$("#capType").val(data.type)
-					$("#textureSelect").val(data.texture)
-					$("#makersMarkSelect").val(data.makersMark)
-					$("#makersMarkSide").val(data.makersMarkSide)
-					$("#makersMarkColor").spectrum("set", data.makersMarkFill)
-					if (data.customFonts.length > 0) {
-						for (x in data.customFonts) {
-							const loadedFont = data.customFonts[x]
-							validFonts.push(loadedFont.familyName)
-							$("head").prepend("<style>@font-face {\n   font-family: '"+loadedFont.familyName+"';\n   src: url('"+loadedFont.fontData+"') format('truetype');\n}\n."+loadedFont.familyName+" { font-family: '"+loadedFont.familyName+"'; font-size: 1.1em;}\n</style>");
-							fontSources[loadedFont.familyName] = loadedFont.fontData;
-							var style = loadedFont.familyName;
-							var font_family = $("."+style).css("font-family");
-							var optgroup = $("<optgroup class='"+loadedFont.familyName+"'>");
-							optgroup.append("<option value='"+loadedFont.familyName+"'>"+loadedFont.fontName+"</option>")
-							$("#fontTypeCombo").append(optgroup)
-							customFonts.push(loadedFont)
-						}	
+				customFonts.splice(0, customFonts.length)
+				const data = JSON.parse(response)
+				customTextureBase = data.customTexture;
+				$("#teamName").val(data.team)
+				$("#startYear").val(data.start)
+				$("#endYear").val(data.end)
+				$("#capType").val(data.type)
+				$("#textureSelect").val(data.texture)
+				$("#makersMarkSelect").val(data.makersMark)
+				$("#makersMarkSide").val(data.makersMarkSide)
+				$("#makersMarkColor").spectrum("set", data.makersMarkFill)
+				if (data.customFonts.length > 0) {
+					for (x in data.customFonts) {
+						const loadedFont = data.customFonts[x]
+						validFonts.push(loadedFont.familyName)
+						$("head").prepend("<style>@font-face {\n   font-family: '"+loadedFont.familyName+"';\n   src: url('"+loadedFont.fontData+"') format('truetype');\n}\n."+loadedFont.familyName+" { font-family: '"+loadedFont.familyName+"'; font-size: 1.1em;}\n</style>");
+						fontSources[loadedFont.familyName] = loadedFont.fontData;
+						var style = loadedFont.familyName;
+						var font_family = $("."+style).css("font-family");
+						var optgroup = $("<optgroup class='"+loadedFont.familyName+"'>");
+						optgroup.append("<option value='"+loadedFont.familyName+"'>"+loadedFont.fontName+"</option>")
+						$("#fontTypeCombo").append(optgroup)
+						customFonts.push(loadedFont)
+					}	
+				}
+				const selectedFont = (validFonts.includes(data.selectedFont)) ? data.selectedFont : "Graduate";
+				var anyTextVisible = false;
+				textureFJS.clear();
+				logoCanvas.clear();
+				below.clear();
+				below.loadFromJSON(data.canvas.below, below.renderAll.bind(below), function(o, object) {
+					below.add(object)
+					$("#"+object.id).spectrum("set", object.fill)
+					if (object.visible) {
+						$("#"+object.id).spectrum('enable');
+					} else {
+						$("#"+object.id).spectrum('disable');
 					}
-					const selectedFont = (validFonts.includes(data.selectedFont)) ? data.selectedFont : "Graduate";
-					var anyTextVisible = false;
-					textureFJS.clear();
-					logoCanvas.clear();
-					below.clear();
-					below.loadFromJSON(data.canvas.below, below.renderAll.bind(below), function(o, object) {
-						//console.log(object.id +  " " + object.type)
-						below.add(object)
-						$("#"+object.id).spectrum("set", object.fill)
+					$("#"+object.id+"Check").prop("checked",object.visible)
+					
+				})
+				logoCanvas.loadFromJSON(data.canvas.logo, logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
+					$("#"+object.id+"Check").prop("checked",object.visible)
+					if (object.id == 'eyeletGroup') {
+						object.getObjects().forEach(function(o) {
+							$("#"+o.id).spectrum("set", o.fill)
+							if (o.visible) {
+								$("#"+o.id).spectrum('enable');
+							} else {
+								$("#"+o.id).spectrum('disable');
+							}
+						})
+					}
+					if (object.id == 'makersMark2') {
+						$("#makersMarkCheck").prop("checked",object.visible)
+					}
+					if (object.id == 'textLogo') {
+						$("#capText").val(object._objects[0].text)
+						$("#capLogoStroke2Color").spectrum("set",object._objects[0].fill)
+						$("#capLogoStroke1Color").spectrum("set",object._objects[1].fill)
+						$("#capLogoTextColor").spectrum("set",object._objects[2].fill)
 						if (object.visible) {
-							$("#"+object.id).spectrum('enable');
+							$("#capText").prop("disabled",false)
+							anyTextVisible = true;
+							$(".textToggle").each(function() {
+								$(this).prop("disabled",false);
+							}) 
 						} else {
-							$("#"+object.id).spectrum('disable');
+							$("#capText").prop("disabled",true)
+							$(".textToggle").each(function() {
+								$(this).prop("disabled",true);
+							}) 
 						}
-						$("#"+object.id+"Check").prop("checked",object.visible)
-						
-					})
-					logoCanvas.loadFromJSON(data.canvas.logo, logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
-						//console.log(object.id +  " " + object.type + " " + object.visible)
-						$("#"+object.id+"Check").prop("checked",object.visible)
-						if (object.id == 'eyeletGroup') {
-							object.getObjects().forEach(function(o) {
-								//console.log(o.id)
-								$("#"+o.id).spectrum("set", o.fill)
-								if (o.visible) {
-									$("#"+o.id).spectrum('enable');
-								} else {
-									$("#"+o.id).spectrum('disable');
-								}
+					}
+					if (object.id == 'textLogo2') {
+						$("#capText2").val(object._objects[0].text)
+						$("#capLogo2Stroke2Color").spectrum("set",object._objects[0].fill)
+						$("#capLogo2Stroke1Color").spectrum("set",object._objects[1].fill)
+						$("#capLogo2TextColor").spectrum("set",object._objects[2].fill)
+						if (object.visible) {
+							$("#capText2").prop("disabled",false)
+							anyTextVisible = true;
+							$(".text2Toggle").each(function() {
+								$(this).prop("disabled",false);
+							}) 
+						} else {
+							$("#capText").prop("disabled",true)
+							$(".text2Toggle").each(function() {
+								$(this).prop("disabled",true);
+							}) 
+						}
+					}
+					
+					logoCanvas.add(object)
+				})
+			
+				var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
+				g.getObjects().forEach(function(o) {
+					var myfont = new FontFaceObserver(data.selectedFont)
+					myfont.load()
+						.then(function() {
+							o.set({
+								"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
 							})
-						}
-						if (object.id == 'makersMark2') {
-							$("#makersMarkCheck").prop("checked",object.visible)
-						}
-						if (object.id == 'textLogo') {
-							$("#capText").val(object._objects[0].text)
-							$("#capLogoStroke2Color").spectrum("set",object._objects[0].fill)
-							$("#capLogoStroke1Color").spectrum("set",object._objects[1].fill)
-							$("#capLogoTextColor").spectrum("set",object._objects[2].fill)
-							if (object.visible) {
-								$("#capText").prop("disabled",false)
-								anyTextVisible = true;
-								$(".textToggle").each(function() {
-									$(this).prop("disabled",false);
-								}) 
-							} else {
-								$("#capText").prop("disabled",true)
-								$(".textToggle").each(function() {
-									$(this).prop("disabled",true);
-								}) 
-							}
-						}
-						if (object.id == 'textLogo2') {
-							$("#capText2").val(object._objects[0].text)
-							$("#capLogo2Stroke2Color").spectrum("set",object._objects[0].fill)
-							$("#capLogo2Stroke1Color").spectrum("set",object._objects[1].fill)
-							$("#capLogo2TextColor").spectrum("set",object._objects[2].fill)
-							if (object.visible) {
-								$("#capText2").prop("disabled",false)
-								anyTextVisible = true;
-								$(".text2Toggle").each(function() {
-									$(this).prop("disabled",false);
-								}) 
-							} else {
-								$("#capText").prop("disabled",true)
-								$(".text2Toggle").each(function() {
-									$(this).prop("disabled",true);
-								}) 
-							}
-						}
-						
-						logoCanvas.add(object)
-					})
+							logoCanvas.renderAll();
+						}).catch(function(e) {
+							console.log(e)
+						});
+				})
+
+				var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
+				g.getObjects().forEach(function(o) {
+					var myfont = new FontFaceObserver(data.selectedFont)
+					myfont.load()
+						.then(function() {
+							o.set({
+								"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
+							})
+							logoCanvas.renderAll();
+						}).catch(function(e) {
+							console.log(e)
+						});
+				})
 				
-					var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
-					g.getObjects().forEach(function(o) {
-						var myfont = new FontFaceObserver(data.selectedFont)
-						myfont.load()
-							.then(function() {
-							// when font is loaded, use it.
-								o.set({
-									"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
-								})
-								logoCanvas.renderAll();
-							}).catch(function(e) {
-								console.log(e)
-								//alert('font loading failed ' + data.familyName);
-							});
-					})
+				below.renderAll()
+				$("#fontTypeCombo").val(selectedFont).trigger('change')
 
-					var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
-					g.getObjects().forEach(function(o) {
-						var myfont = new FontFaceObserver(data.selectedFont)
-						myfont.load()
-							.then(function() {
-							// when font is loaded, use it.
-								o.set({
-									"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
-								})
-								logoCanvas.renderAll();
-							}).catch(function(e) {
-								console.log(e)
-								//alert('font loading failed ' + data.familyName);
-							});
+				if (data.texture == "custom") {
+					$("#clearTexture").css("display","inline-block");
+					$("#textureSelect").val(null)
+					$("#textureSelect").trigger("change")	
+				} else {
+					$("#textureSelect").trigger("change")	
+				}
+				$("#textureSelect").val(data.texture)		
+				
+				if (anyTextVisible == true) {
+					$("#fontTypeCombo").prop("disabled",false);
+					$(".textOption").each(function() {
+						$(this).prop("disabled",false);
 					})
-					
-					below.renderAll()
-					$("#fontTypeCombo").val(selectedFont).trigger('change')
-
-					if (data.texture == "custom") {
-						$("#clearTexture").css("display","inline-block");
-						$("#textureSelect").val(null)
-						$("#textureSelect").trigger("change")	
-					} else {
-						$("#textureSelect").trigger("change")	
-					}
-					$("#textureSelect").val(data.texture)		
-					
-					if (anyTextVisible == true) {
-						$("#fontTypeCombo").prop("disabled",false);
-						$(".textOption").each(function() {
-							$(this).prop("disabled",false);
-						})
-					} else {
-						$("#fontTypeCombo").prop("disabled",true);
-						$(".textOption").each(function() {
-							$(this).prop("disabled",true);
-						})
-					}
-					reRenderBG()
-				//}
-				//fileReader.readAsText(response);
+				} else {
+					$("#fontTypeCombo").prop("disabled",true);
+					$(".textOption").each(function() {
+						$(this).prop("disabled",true);
+					})
+				}
+				reRenderBG()
 			}
 		});
 	})
@@ -2672,7 +2552,6 @@
 	})
 
 	$("#uploadTheFont").on("click", function(e) {
-		//$("#fontTypeCombo").removeClass().addClass('alegreya');
 		$.ajax({
 			type: "GET",
 			url: "http://127.0.0.1:"+port+"/customFont",
@@ -2683,40 +2562,27 @@
 				var font_family = $("."+style).css("font-family");
 				var objects = logoCanvas.getObjects("group");
 				var myfont = new FontFaceObserver(data.familyName)
-				myfont.load()
-					.then(function() {
-					// when font is loaded, use it.
-							for (x in objects) {
-							if (objects[x].id == "wordmark") {
-								var tmp = objects[x].getObjects();
-								for (i in tmp) {
-									//console.log(tmp[i].fontFamily)
-									tmp[i].fontFamily = data.familyName;
-									//console.log(tmp[i].fontFamily)
-								}
+				myfont.load().then(function() {
+						for (x in objects) {
+						if (objects[x].id == "wordmark") {
+							var tmp = objects[x].getObjects();
+							for (i in tmp) {
+								tmp[i].fontFamily = data.familyName;
 							}
 						}
-						logoCanvas.renderAll();
-						var optgroup = $("<optgroup class='"+data.familyName+"'>");
-						optgroup.append("<option value='"+data.familyName+"'>"+data.fontName+"</option>")
-						$("#fontTypeCombo").append(optgroup)
-						$("#fontTypeCombo").children().remove("optgroup[class='alegreya']");
-						//optgroup = $("<optgroup class='alegreya'>");
-						//optgroup.append("<option value='custom'>Custom Font</option>")
-						//$("#fontTypeCombo").append(optgroup)
-						$("#fontTypeCombo").val(data.familyName)
-						$("#fontTypeCombo").removeClass().addClass(data.familyName);
-						$("#fontTypeCombo").change()
-					}).catch(function(e) {
-						console.log(e)
-						alert('font loading failed ' + data.familyName);
-					});
-				
-				//wordmarkText.fontFamily = font_family;
-				//wordmarkTextStroke1.fontFamily = font_family;
-				//wordmarkTextStroke2.fontFamily = font_family;
-				//logoCanvas.renderAll();
-				//$(this).removeClass().addClass(style);
+					}
+					logoCanvas.renderAll();
+					var optgroup = $("<optgroup class='"+data.familyName+"'>");
+					optgroup.append("<option value='"+data.familyName+"'>"+data.fontName+"</option>")
+					$("#fontTypeCombo").append(optgroup)
+					$("#fontTypeCombo").children().remove("optgroup[class='alegreya']");
+					$("#fontTypeCombo").val(data.familyName)
+					$("#fontTypeCombo").removeClass().addClass(data.familyName);
+					$("#fontTypeCombo").change()
+				}).catch(function(e) {
+					console.log(e)
+					alert('font loading failed ' + data.familyName);
+				});
 			}
 		})
 	})
