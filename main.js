@@ -1,7 +1,7 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, Menu, shell } = require('electron')
+const { app, BrowserWindow, dialog, Menu, shell, webContents  } = require('electron')
 const path = require('path')
 const express = require('express');
 const Jimp = require('jimp');
@@ -343,19 +343,17 @@ function getExtension(filename) {
 const port = 8081;
 
 function createWindow () {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1280,
     height: 760,
 	icon: (__dirname + '/images/ballcap.png'),
     webPreferences: {
 		nodeIntegration: true,
-	  	contextIsolation: false
-      //preload: path.join(__dirname, 'preload.js')
+	  	contextIsolation: false 
     }
   })
+  
   const template = [
-	// { role: 'appMenu' }
 	...(isMac ? [{
 		label: app.name,
 		submenu: [
@@ -370,7 +368,6 @@ function createWindow () {
 		{ role: 'quit' }
 		]
 	}] : []),
-	// { role: 'fileMenu' }
 	{
 		label: 'File',
 		submenu: [
@@ -385,7 +382,6 @@ function createWindow () {
 		isMac ? { role: 'close' } : { role: 'quit' }
 		]
 	},
-	// { role: 'viewMenu' }
 	{
 		label: 'View',
 		submenu: [
@@ -400,7 +396,6 @@ function createWindow () {
 		{ role: 'togglefullscreen' }
 		]
 	},
-	// { role: 'windowMenu' }
 	{
 		label: 'Window',
 		submenu: [
@@ -454,17 +449,16 @@ function createWindow () {
 	const menu = Menu.buildFromTemplate(template)
 	Menu.setApplicationMenu(menu)
 
-  // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html?port=${server.address().port}&preferredColorFormat=${preferredColorFormat}&preferredTexture=${preferredTexture}`);
 
-  mainWindow.webContents.on('new-window', function(e, url) {
-	e.preventDefault();
-	require('electron').shell.openExternal(url);
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+	shell.openExternal(url);
+	return { action: 'deny' };
   });
 
   // Open the DevTools.
-  	mainWindow.maximize()
-   	mainWindow.webContents.openDevTools()
+  // mainWindow.maximize()
+  // mainWindow.webContents.openDevTools()
 }
 
 app.whenReady().then(() => {
