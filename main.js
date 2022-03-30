@@ -373,10 +373,12 @@ function createWindow () {
 		submenu: [
 		{
 			click: () => mainWindow.webContents.send('load-cap','click'),
+			accelerator: process.platform === 'darwin' ? 'Cmd+L' : 'Control+L',
 			label: 'Load Cap',
 		},
 		{
 			click: () => mainWindow.webContents.send('save-cap','click'),
+			accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Control+S',
 			label: 'Save Cap',
 		},
 		isMac ? { role: 'close' } : { role: 'quit' }
@@ -397,22 +399,7 @@ function createWindow () {
 		]
 	},
 	{
-		label: 'Window',
-		submenu: [
-		{ role: 'minimize' },
-		{ role: 'zoom' },
-		...(isMac ? [
-			{ type: 'separator' },
-			{ role: 'front' },
-			{ type: 'separator' },
-			{ role: 'window' }
-		] : [
-			{ role: 'close' }
-		])
-		]
-	},
-	{
-		role: 'help',
+		label: 'About',
 		submenu: [
 		{
 			click: () => mainWindow.webContents.send('about','click'),
