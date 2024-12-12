@@ -1,7 +1,7 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, Menu, shell, webContents  } = require('electron')
+const { app, BrowserWindow, dialog, Menu, shell, webContents, ipcMain } = require('electron')
 const path = require('path')
 const express = require('express');
 const Jimp = require('jimp');
@@ -15,7 +15,7 @@ const ttfInfo = require('ttfinfo');
 const url = require('url');
 const isMac = process.platform === 'darwin'
 const archiver = require('archiver')
-const font2base64 = require("node-font2base64")
+//const font2base64 = require("node-font2base64")
 const Store = require("electron-store")
 
 const server = app2.listen(0, () => {
@@ -29,17 +29,18 @@ const preferredTexture = store.get("preferredTexture", "texture")
 
 app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
 
-app2.get("/uploadCap", (req, res) => {
+ipcMain.on('upload-cap', (event, arg) => {
 	const file = dialog.showOpenDialogSync(null, {
 		properties: ['openFile'],
 		filters: [
 			{ name: 'Ballcap Files', extensions: ['cap'] }
 		]
 	})
-	res.end(JSON.stringify(JSON.parse(fs.readFileSync(file[0]).toString())))
+	event.sender.send('upload-cap-response', JSON.stringify(JSON.parse(fs.readFileSync(file[0]).toString())))
 })
 
-app2.get("/uploadImage", (req, res) => {
+ipcMain.on("upload-image", (event, arg) => {
+	let json = {}
 	dialog.showOpenDialog(null, {
 		properties: ['openFile'],
 		filters: [
@@ -47,18 +48,14 @@ app2.get("/uploadImage", (req, res) => {
 		]
 	  }).then(result => {
 		  if(!result.canceled) {
-			//console.log(result.filePaths)
 			Jimp.read(result.filePaths[0], (err, image) => {
 				if (err) {
 					console.log(err);
 				} else {
 					image.getBase64(Jimp.AUTO, (err, ret) => {
-						//console.log(ret);
-						//res.json({
-						//	"filename": "hello world",
-						//	"image": res
-						//  });
-						res.end(ret);
+						json.filename = path.basename(result.filePaths[0])
+						json.image = ret
+						event.sender.send('upload-image-response', json);
 					})
 				}
 			});
@@ -102,48 +99,48 @@ app2.get("/uploadImage", (req, res) => {
 			});
 }) */
 
-app2.post('/savecap', (req, res) => {
-	const buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	const json = Buffer.from(req.body.canvas, 'utf-8')
+ipcMain.on('save-cap', (event, arg) => {
+	const buffer = Buffer.from(arg.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+	const json = Buffer.from(arg.canvas, 'utf-8')
 
-	const output = fs.createWriteStream(tempDir + '/'+req.body.name+'.zip');
+	const output = fs.createWriteStream(tempDir + '/'+arg.name+'.zip');
 
 	output.on('close', function() {
-		var data = fs.readFileSync(tempDir + '/'+req.body.name+'.zip');
+		var data = fs.readFileSync(tempDir + '/'+arg.name+'.zip');
 		var saveOptions = {
-		  defaultPath: app.getPath('downloads') + '/' + req.body.name+'.zip',
+			defaultPath: app.getPath('downloads') + '/' + arg.name+'.zip',
 		}
 		dialog.showSaveDialog(null, saveOptions).then((result) => { 
-		  if (!result.canceled) {
+			if (!result.canceled) {
 			fs.writeFile(result.filePath, data, function(err) {
-			  if (err) {
-				res.end("success")
-				fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
-				  if (err) {
+				if (err) {
+				//res.end("success")
+				fs.unlink(tempDir + '/'+arg.name+'.zip', (err) => {
+					if (err) {
 					console.error(err)
 					return
-				  }
+					}
 				})
-				res.end("success")
-			  } else {
-				fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
-				  if (err) {
+				//res.end("success")
+				} else {
+				fs.unlink(tempDir + '/'+arg.name+'.zip', (err) => {
+					if (err) {
 					console.error(err)
 					return
-				  }
+					}
 				})
-				res.end("success")
-			  };
+				//res.end("success")
+				};
 			})
-		  } else {
-			fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
-			  if (err) {
+			} else {
+			fs.unlink(tempDir + '/'+arg.name+'.zip', (err) => {
+				if (err) {
 				console.error(err)
 				return
-			  }
+				}
 			})
-			res.end("success");
-		  }
+			//res.end("success");
+			}
 		})
 	});
 
@@ -170,8 +167,8 @@ app2.post('/savecap', (req, res) => {
 						fir_img.composite(sec_img, 0, 0);
 						fir_img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
 							const finalImage = Buffer.from(buffer);
-							archive.append(finalImage, {name: req.body.name+".png"})
-							archive.append(json, {name: req.body.name+".cap"})
+							archive.append(finalImage, {name: arg.name+".png"})
+							archive.append(json, {name: arg.name+".cap"})
 							archive.finalize()
 							});
 						
@@ -238,11 +235,11 @@ app2.post("/replaceColor", (req, res) => {
 	})
 })
 
-app2.post("/removeColorRange", (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var x = parseInt(req.body.x);
-	var y = parseInt(req.body.y);
-	var fuzz = parseInt(req.body.fuzz);
+ipcMain.on('remove-color-range', (event, arg) => {
+	var buffer = Buffer.from(arg.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+	var x = parseInt(arg.x);
+	var y = parseInt(arg.y);
+	var fuzz = parseInt(arg.fuzz);
 	Jimp.read(buffer, (err, image) => {
 		if (err) {
 			console.log(err);
@@ -254,7 +251,7 @@ app2.post("/removeColorRange", (req, res) => {
 							console.log(err);
 						} else {
 							image.getBase64(Jimp.AUTO, (err, ret) => {
-								res.end(ret);
+								event.sender.send('replace-color-response', ret)
 							})
 						}
 					})
@@ -293,7 +290,8 @@ app2.post('/removeAllColor', (req, res) => {
 	})
 });
 
-app2.get("/customFont", (req, res) => {
+ipcMain.on("custom-font", (event, arg) => {
+	let json = {}
 	dialog.showOpenDialog(null, {
 		properties: ['openFile'],
 		filters: [
@@ -303,22 +301,20 @@ app2.get("/customFont", (req, res) => {
 		if(!result.canceled) {
 			ttfInfo(result.filePaths[0], function(err, info) {
 			var ext = getExtension(result.filePaths[0])
-				const dataUrl = font2base64.encodeToDataUrlSync(result.filePaths[0])
+				const dataUrl = ""
 				var fontPath = url.pathToFileURL(tempDir + '/'+path.basename(result.filePaths[0]))
 				fs.copyFile(result.filePaths[0], tempDir + '/'+path.basename(result.filePaths[0]), (err) => {
 					if (err) {
 						console.log(err)
 					} else {
-						res.json({
-							"fontName": info.tables.name[1],
-							"fontStyle": info.tables.name[2],
-							"familyName": info.tables.name[6],
-							"fontFormat": ext,
-							"fontMimetype": 'font/' + ext,
-							"fontData": fontPath.href,
-							"fontBase64": dataUrl
-						});
-						res.end()
+						json.fontName = info.tables.name[1],
+						json.fontStyle = info.tables.name[2],
+						json.familyName = info.tables.name[6],
+						json.fontFormat = ext,
+						json.fontMimetype = 'font/' + ext,
+						json.fontData = fontPath.href,
+						json.fontBase64 = dataUrl
+						event.sender.send('custom-font-response', json)
 					}
 				})
 			});
@@ -328,11 +324,10 @@ app2.get("/customFont", (req, res) => {
 	})
 })
 
-app2.post('/setPreference', (req, res) => {
-	const pref = req.body.pref;
-	const val = req.body.val;
+ipcMain.on('set-preference', (event, arg) => {
+	const pref = arg.pref;
+	const val = arg.val;
 	store.set(pref, val)
-	res.end()
 });
 
 function getExtension(filename) {
