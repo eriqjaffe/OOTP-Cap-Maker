@@ -7,17 +7,21 @@ const Jimp = require('jimp');
 const os = require('os');
 const tempDir = os.tmpdir()
 const fs = require('fs')
-const ttfInfo = require('ttfinfo');
 const url = require('url');
 const isMac = process.platform === 'darwin'
 const archiver = require('archiver')
 //const font2base64 = require("node-font2base64")
 const Store = require("electron-store")
+const fontname = require('fontname')
 
 const store = new Store();
 
 const preferredColorFormat = store.get("preferredColorFormat", "hex")
 const preferredTexture = store.get("preferredTexture", "texture")
+const userFontsFolder = path.join(app.getPath('userData'),"fonts")
+if (!fs.existsSync(userFontsFolder)) {
+    fs.mkdirSync(userFontsFolder);
+}
 
 ipcMain.on('upload-cap', (event, arg) => {
 	const file = dialog.showOpenDialogSync(null, {
@@ -162,7 +166,7 @@ ipcMain.on('replace-color', (event, arg) => {
 	})
 })
 
-ipcMain.on("custom-font", (event, arg) => {
+/* ipcMain.on("custom-font", (event, arg) => {
 	let json = {}
 	dialog.showOpenDialog(null, {
 		properties: ['openFile'],
@@ -194,6 +198,94 @@ ipcMain.on("custom-font", (event, arg) => {
 	}).catch(err => {
 		console.log(err)
 	})
+}) */
+
+ipcMain.on('custom-font', (event, arg) => {
+	let json = {}
+	const options = {
+		defaultPath: store.get("uploadFontPath", app.getPath('desktop')),
+		properties: ['openFile'],
+		filters: [
+			{ name: 'Fonts', extensions: ['ttf', 'otf'] }
+		]
+	}
+	dialog.showOpenDialog(null, options).then(result => {
+		if(!result.canceled) {
+			store.set("uploadFontPath", path.dirname(result.filePaths[0]))
+			const filePath = path.join(userFontsFolder,path.basename(result.filePaths[0]))
+			try {
+				const fontMeta = fontname.parse(fs.readFileSync(result.filePaths[0]))[0];
+				var ext = getExtension(result.filePaths[0])
+				var fontPath = url.pathToFileURL(result.filePaths[0])
+				json.status = "ok"
+				json.fontName = fontMeta.fullName
+				json.fontStyle = fontMeta.fontSubfamily
+				json.familyName = fontMeta.fontFamily
+				json.fontFormat = ext
+				json.fontMimetype = 'font/' + ext
+				json.fontData = fontPath.href
+				json.fontPath = filePath
+				fs.copyFileSync(result.filePaths[0], filePath)
+				event.sender.send('custom-font-response', json)
+			} catch (err) {
+				json.status = "error"
+				json.fontName = path.basename(result.filePaths[0])
+				json.fontPath = result.filePaths[0]
+				json.message = err
+				event.sender.send('custom-font-response', json)
+				fs.unlinkSync(result.filePaths[0])
+			}
+		} else {
+			json.status = "cancelled"
+			event.sender.send('custom-font-response', json)
+			log.info("User cancelled custom font dialog")
+		}
+	}).catch(err => {
+		console.log(err)
+		json.status = "error",
+		json.message = err
+		event.sender.send('custom-font-response', json)
+	})
+})
+
+ipcMain.on('local-font-folder', (event, arg) => {
+	const jsonObj = {}
+	const jsonArr = []
+
+	filenames = fs.readdirSync(userFontsFolder);
+	for (i=0; i<filenames.length; i++) {
+		if (path.extname(filenames[i]).toLowerCase() == ".ttf" || path.extname(filenames[i]).toLowerCase() == ".otf") {
+			const filePath = path.join(userFontsFolder,filenames[i])
+			try {
+				const fontMeta = fontname.parse(fs.readFileSync(filePath))[0];
+				var ext = getExtension(filePath)
+				var fontPath = url.pathToFileURL(filePath)
+				var json = {
+					"status": "ok",
+					"fontName": fontMeta.fullName,
+					"fontStyle": fontMeta.fontSubfamily,
+					"familyName": fontMeta.fontFamily,
+					"fontFormat": ext,
+					"fontMimetype": 'font/' + ext,
+					"fontData": fontPath.href,
+					"fontPath": filePath,
+				};
+				jsonArr.push(json)
+			} catch (err) {
+				const json = {
+					"status": "error",
+					"fontName": path.basename(filePath),
+					"fontPath": filePath,
+					"message": err
+				}
+				jsonArr.push(json)
+				fs.unlinkSync(filePath)
+			}
+		}
+	}
+	jsonObj.result = "success"
+	jsonObj.fonts = jsonArr
+	event.sender.send('local-font-folder-response', jsonObj)
 })
 
 ipcMain.on('set-preference', (event, arg) => {
