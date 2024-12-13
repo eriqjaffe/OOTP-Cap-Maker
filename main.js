@@ -3,14 +3,10 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, dialog, Menu, shell, webContents, ipcMain } = require('electron')
 const path = require('path')
-const express = require('express');
 const Jimp = require('jimp');
-const imagemagickCli = require('imagemagick-cli');
-//const imgur = require('imgur');
 const os = require('os');
 const tempDir = os.tmpdir()
 const fs = require('fs')
-const app2 = express();
 const ttfInfo = require('ttfinfo');
 const url = require('url');
 const isMac = process.platform === 'darwin'
@@ -18,16 +14,10 @@ const archiver = require('archiver')
 //const font2base64 = require("node-font2base64")
 const Store = require("electron-store")
 
-const server = app2.listen(0, () => {
-	console.log(`Server running on port ${server.address().port}`);
-});
-
 const store = new Store();
 
 const preferredColorFormat = store.get("preferredColorFormat", "hex")
 const preferredTexture = store.get("preferredTexture", "texture")
-
-app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
 
 ipcMain.on('upload-cap', (event, arg) => {
 	const file = dialog.showOpenDialogSync(null, {
@@ -64,40 +54,6 @@ ipcMain.on("upload-image", (event, arg) => {
 		console.log(err)
 	  })
 })
-
-/* app2.post("/imgur", (req, res)  => {
-	imgur.setClientId('c9ff708b19a4996');
-	imgur.setAPIUrl('https://api.imgur.com/3/');
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	Jimp.read(buffer, (err, fir_img) => {
-			if(err) {
-				console.log(err);
-			} else {
-					Jimp.read('./images/cm_watermark.png', (err, sec_img) => {
-						if(err) {
-							console.log(err);
-						} else {
-							fir_img.composite(sec_img, 0, 0);
-							fir_img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-								var finalImage = Buffer.from(buffer).toString('base64');
-								//new Promise((resolve, reject) => {
-									imgur
-										.uploadBase64(finalImage.replace(/^data:image\/(png|gif|jpeg);base64,/,''))
-										.then((json) => {
-											console.log(json.link);
-											return json.link;
-										})
-										.catch((err) => {
-											console.error(err.message);
-										});
-									})
-							  //});
-							
-						}
-					})
-				}
-			});
-}) */
 
 ipcMain.on('save-cap', (event, arg) => {
 	const buffer = Buffer.from(arg.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
@@ -178,117 +134,33 @@ ipcMain.on('save-cap', (event, arg) => {
 		}); 
 });
 
-app2.post("/removeBorder", (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var fuzz = parseInt(req.body.fuzz);
-	Jimp.read(buffer, (err, image) => {
-		if (err) {
-			console.log(err);
-		} else {
-			image.write(tempDir + '/temp.png');
-			imagemagickCli.exec('magick convert -trim -fuzz '+fuzz+'% '+tempDir+'/temp.png '+tempDir+'/temp.png').then(({ stdout, stderr }) => {
-				Jimp.read(tempDir + '/temp.png', (err, image) => {
-					if (err) {
-						console.log(err);
-					} else {
-						image.getBase64(Jimp.AUTO, (err, ret) => {
-							res.end(ret);
-						})
-					}
-				})
-			})
-		}
-	})
-})
-
-app2.post("/replaceColor", (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var x = parseInt(req.body.x);
-	var y = parseInt(req.body.y);
-	var color = req.body.color;
-	var newcolor = req.body.newcolor;
-	var action = req.body.action;
-	var fuzz = parseInt(req.body.fuzz);
-	var cmdString;
-	Jimp.read(buffer, (err, image) => {
-		if (err) {
-			console.log(err);
-		} else {
-			image.write(tempDir + '/temp.png');
-			if (action == "replaceColorRange") {
-				cmdString = 'magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -fill '+newcolor+' -draw "color '+x+','+y+' floodfill" '+tempDir+'/temp.png';		
-			} else {
-				cmdString = 'magick convert '+tempDir+'/temp.png -fuzz 50% -fill '+newcolor+' -opaque '+color+' '+tempDir+'/temp.png';	
-			}
-			imagemagickCli.exec(cmdString).then(({ stdout, stderr }) => {
-				Jimp.read(tempDir + '/temp.png', (err, image) => {
-					if (err) {
-						console.log(err);
-					} else {
-						image.getBase64(Jimp.AUTO, (err, ret) => {
-							res.end(ret);
-						})
-					}
-				})
-			})
-		}
-	})
-})
-
-ipcMain.on('remove-color-range', (event, arg) => {
+ipcMain.on('remove-border', (event, arg) => {
 	var buffer = Buffer.from(arg.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var x = parseInt(arg.x);
-	var y = parseInt(arg.y);
 	var fuzz = parseInt(arg.fuzz);
 	Jimp.read(buffer, (err, image) => {
 		if (err) {
 			console.log(err);
 		} else {
-			image.write(tempDir + '/temp.png', (err) => {
-				imagemagickCli.exec('magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -fill none -draw "color '+x+','+y+' floodfill" '+tempDir+'/temp.png').then(({ stdout, stderr }) => {
-					Jimp.read(tempDir + '/temp.png', (err, image) => {
-						if (err) {
-							console.log(err);
-						} else {
-							image.getBase64(Jimp.AUTO, (err, ret) => {
-								event.sender.send('replace-color-response', ret)
-							})
-						}
-					})
-				})
-			})
-		}
- 	})
-})
-
-app2.post('/removeAllColor', (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var x = parseInt(req.body.x);
-	var y = parseInt(req.body.y);
-	var color = req.body.color;
-	var fuzz = parseInt(req.body.fuzz);
-	Jimp.read(buffer, (err, image) => {
-		if (err) {
-			console.log(err);		
-		} else {
-			image.write(tempDir + '/temp.png', (err) => {
-				var cmdString = 'magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -transparent '+color+' '+tempDir+'/temp.png';
-				console.log(cmdString);
-				imagemagickCli.exec(cmdString).then(({ stdout, stderr }) => {
-					Jimp.read(tempDir + '/temp.png', (err, image) => {
-						if (err) {
-							console.log(err);
-						} else {
-							image.getBase64(Jimp.AUTO, (err, ret) => {
-								res.end(ret);
-							})
-						}
-					})
-				})
+			image.autocrop()
+			image.getBase64(Jimp.AUTO, (err, ret) => {
+				event.sender.send('imagemagick-response', ret)
 			})
 		}
 	})
-});
+})
+
+ipcMain.on('replace-color', (event, arg) => {	
+	var buffer = Buffer.from(arg.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+	Jimp.read(buffer, (err, image) => {
+		if (err) {
+			console.log(err);
+		} else {
+			image.getBase64(Jimp.AUTO, (err, ret) => {
+				event.sender.send('imagemagick-response', ret)
+			})
+		}
+	})
+})
 
 ipcMain.on("custom-font", (event, arg) => {
 	let json = {}
@@ -431,7 +303,7 @@ function createWindow () {
 	const menu = Menu.buildFromTemplate(template)
 	Menu.setApplicationMenu(menu)
 
-  mainWindow.loadURL(`file://${__dirname}/index.html?port=${server.address().port}&preferredColorFormat=${preferredColorFormat}&preferredTexture=${preferredTexture}`);
+  mainWindow.loadURL(`file://${__dirname}/index.html?preferredColorFormat=${preferredColorFormat}&preferredTexture=${preferredTexture}`);
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
 	shell.openExternal(url);
