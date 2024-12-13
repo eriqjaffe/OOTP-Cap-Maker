@@ -9,30 +9,26 @@
 	<script type="text/javascript" src="./scripts/spectrum.js"></script>
 	<script type="text/javascript" src="./scripts/fabric16.js"></script>
 	<script type="text/javascript" src="./scripts/context_blender.js"></script>
-	<script type="text/javascript" src="./scripts/canvassaver.js"></script>
-	<script type="text/javascript" src="./scripts/canvas-to-image.min.js"></script>
 	<script type="text/javascript" src="./scripts/modernizr.custom.68502.js"></script>
 	<script type="text/javascript" src="./scripts/jquery.magnific-popup.min.js"></script>
 	<script type="text/javascript" src="./scripts/jquery.mousewheel.min.js"></script>
-	<script type="text/javascript" src="./scripts/jquery.fileDownload.js"></script>
-	<script type="text/javascript" src="./scripts/jquery.html5storage.min.js"></script>
 	<script type="text/javascript" src="./scripts/spin.min.js"></script>
-	<script type="text/javascript" src="./scripts/fontfaceobserver.js"></script>
+	<script type="text/javascript" src="./scripts/opentype.js"></script>
+	<script type="text/javascript" src="./scripts/dd.min.js"></script>
 	<script>if (window.module) module = window.module;</script>
 	<link href='./scripts/capmaker.css' rel='stylesheet' type='text/css'>
 	<link href='./scripts/spectrum.css' rel='stylesheet' type='text/css'>
 	<link href='./scripts/menu.css' rel='stylesheet' type='text/css'>
 	<link href='./scripts/magnific-popup.css' rel='stylesheet' type='text/css'>
+	<link href='./scripts/dd.css' rel='stylesheet' type='text/css'>
 	<script>
+		const { ipcRenderer } = require('electron')
 		const params = new URLSearchParams(window.location.search)
 		const port = params.get('port')
 		const prefColorFormat = params.get('preferredColorFormat')
 		const prefTexture = params.get('preferredTexture')
 		var defaultTexture = prefTexture+".png";
 		var customTextureBase = ""
-
-		console.log(prefColorFormat)
-		console.log(defaultTexture)
 
 		const initialColors = {capColor:"#c6011f",underBrimColor:"#656765",topsideBrimColor:"#1d1654",squatcheeColor:"yellow",frontPanelColor:"#FFFFFF",smallFrontPanelColor:"yellow",pinstripeColor:"blue",pinstripe2Color:"cyan", horizontalPinstripeColor:"yellow",capLogoTextColor:"white",capLogoStroke1Color:"green",capLogoStroke2Color:"black",capLogo2TextColor:"white",capLogo2Stroke1Color:"green",capLogo2Stroke2Color:"black",bandBoxSingleThickColor:"orange",bandBoxDoubleThickColor:"greenyellow",jockeyColor:"brown",braidStripeInnerColor:"red",braidStripeOuterColor:"blue",frontPanelBorderColor:"cyan",bostonColor:"yellowgreen",smallPanelBorderColor:"cyan",curvedBrimColor:"cyan",curvedBrimBorderColor:"blue",peakBandColor:"orange",stingyBrimColor:"red",lidPinstripesColor:"blue",stingyLidPinstripesColor:"yellow",eyeletFillColor:"black",eyeletStrokeColor:"yellow",snakeskinColor:"#000000",scrambledEggColor:"#FED141",makersMarkColor:"#FFFFFF"}
 		const capLeftX = 211.25;
@@ -46,6 +42,7 @@
 		var validFonts = ['Acme','AthleticGothic','AthleticGothicShadow','BeavertonScript','Berkshire_Swash','Cantora_One','CaxtonRoman','Chela_One','Circus','Condiment','Cookie','Courgette','Croissant_One','Damion','Engagement','RawlingsFancyBlock','Germania_One','Graduate','Grand_Hotel','Jockey_One','Kansas','Kaushan_Script','Leckerli_One','Lily_Script_One','Lobster','Lobster_Two','Metal_Mania','Miniver','Molle','New_Rocker','Norican','OldEnglish','Oleo_Script','Oleo_Script_Swash_Caps','Pacifico','Pirata_One','Playball','ProFullBlock','RichardsonFancyBlock','Rubik_One','Rum_Raisin','Satisfy','Seymour_One','spl28','TiffanyRegular','Trade_Winds','Tuscan','UnifrakturCook','UnifrakturMaguntia','Vibur','Viga','Wellfleet','Wendy_One','Yellowtail']
 		var fontSources = {Acme: "Acme-Regular.ttf",athletic_gothicregular: "athletic_gothic-webfont.ttf",athletic_gothic_shadowregular: "athletic_gothic_shadow-webfont.ttf",beaverton_scriptregular: "beaverton_script-webfont.ttf",'"Berkshire Swash"': "BerkshireSwash-Regular.ttf",'"Cantora One"': "CantoraOne-Regular.ttf",caxton_romanregular: "caxton_roman-webfont.ttf",'"Chela One"': "ChelaOne-Regular.ttf",russell_circusregular: "circus-webfont.ttf",Condiment: "Condiment-Regular.ttf",Cookie: "Cookie-Regular.ttf",Courgette: "Courgette-Regular.ttf",'"Croissant One"': "CroissantOne-Regular.ttf",Damion: "Damion-Regular.ttf",Engagement: "Engagement-Regular.ttf",rawlings_fancy_blockregular: "rawlingsfancyblock-regular-webfont.ttf",'"Germania One"': "GermaniaOne-Regular.ttf",Graduate: "Graduate-Regular.ttf",'"Grand Hotel"': "GrandHotel-Regular.ttf",'"Jockey One"': "JockeyOne-Regular.ttf",kansasregular: "tuscan-webfont.ttf",'"Kaushan Script"': "KaushanScript-Regular.ttf",'"Leckerli One"': "LeckerliOne-Regular.ttf",'"Lily Script One"': "LilyScriptOne-Regular.ttf",Lobster: "Lobster-Regular.ttf",'"Lobster Two"': "LobsterTwo-Regular.ttf",'"Metal Mania"': "MetalMania-Regular.ttf",Miniver: "Miniver-Regular.ttf",'Molle,italic': "Molle-Regular.ttf",'"New Rocker"': "NewRocker-Regular.ttf",Norican: "Norican-Regular.ttf",rawlings_old_englishmedium: "rawlingsoldenglish-webfont.ttf",'"Oleo Script"': "OleoScript-Regular.ttf",'"Oleo Script Swash Caps"': "OleoScriptSwashCaps-Regular.ttf",Pacifico: "Pacifico.ttf",'"Pirata One"': "PirataOne-Regular.ttf",Playball: "Playball-Regular.ttf",pro_full_blockregular: "pro_full_block-webfont.ttf",richardson_fancy_blockregular: "richardson_fancy_block-webfont.ttf",'"Rubik One"': "RubikOne-Regular.ttf",'"Rum Raisin"': "RumRaisin-Regular.ttf",Satisfy: "Satisfy-Regular.ttf",'"Seymour One"': "SeymourOne-Regular.ttf",spl28scriptregular: "spl28script-webfont.ttf",ua_tiffanyregular: "tiffany-webfont.ttf",'"Trade Winds"': "TradeWinds-Regular.ttf",mlb_tuscan_newmedium: "mlb_tuscan_new-webfont.ttf",UnifrakturCook: "UnifrakturCook-Bold.ttf",UnifrakturMaguntia: "UnifrakturMaguntia-Book.ttf",Vibur: "Vibur-Regular.ttf",Viga: "Viga-Regular.ttf",Wellfleet: "Wellfleet-Regular.ttf",'"Wendy One"': "WendyOne-Regular.ttf",Yellowtail: "Yellowtail-Regular.ttf"};
 		var fontFamilies = {Acme: "Acme",athletic_gothicregular: "AthleticGothic",athletic_gothic_shadowregular: "AthleticGothicShadow",beaverton_scriptregular: "BeavertonScript",'Berkshire Swash': "Berkshire_Swash",'Cantora One': "Cantora_One",caxton_romanregular: "CaxtonRoman",'Chela One': "Chela_One",russell_circusregular: "Circus",Condiment: "Comdiment",Cookie: "Coookie",Courgette: "Courgette",'Croissant One': "Croissant_one",Damion: "Damion",Engagement: "Engagement",rawlings_fancy_blockregular: "RawlingsFancyBlock",'Germania One': "Germania_One",Graduate: "Graduate",'Grand Hotel': "Grand_Hotel",'Jockey One': "Jockey_One",kansasregular: "Kansas",'Kaushan Script': "Kaushan_Script",'Leckerli One': "Leckerli_One",'Lily Script One': "Lily_Script_One",Lobster: "Lobster",'Lobster Two': "Lobster_Two",'Metal Mania': "Metal_Mania",Miniver: "Miniver",'Molle,italic': "Molle",'New Rocker': "New_Rocker",Norican: "Norican",rawlings_old_englishmedium: "OldEnglish",'Oleo Script': "Oleo_Script",'Oleo Script Swash Caps': "Oleo_Script_Swash_Caps",Pacifico: "Pacifico",'Pirata One': "Pirata_One",Playball: "Playball",pro_full_blockregular: "ProFullBlock",richardson_fancy_blockregular: "RichardsonFancyBlock",'Rubik One': "Rubik_One",'Rum Raisin': "Rum_Raisin",Satisfy: "Satisfy",'Seymour One': "Seymour_One",spl28scriptregular: "spl28",ua_tiffanyregular: "TiffanyRegular",'Trade Winds': "Trade_Winds",mlb_tuscan_newmedium: "Tuscan",UnifrakturCook: "UnifrakturCook",UnifrakturMaguntia: "UnifrakturMaguntia",Vibur: "Vibur",Viga: "Viga",Wellfleet: "Wellfleet",'Wendy One': "Wendy_One",Yellowtail: "Yellowtail"};
+		var fontList = ["Acme", "All State", "Athletic Gothic", "Athletic Gothic Shadow", "Beaverton Script", "Berkshire Swash", "CantoraOne", "Caxton Roman", "Chela", "Russell Circus", "Condiment", "Cookie", "Courgette", "Croissant", "Damion", "Engagement", "Germania", "Graduate", "Grand Hotel", "Jockey", "Kaushan Script", "Leckerli", "Lily Script", "Lobster", "Lobster Two", "Metal Mania", "Miniver", "MLB Block", "MLB Chicago N", "McAuliffe", "Molle", "New Rocker", "Norican", "Oleo Script", "Pacifico", "Pirata", "Playball", "Pro Full Block", "Quicksand", "Rubik Mono", "Rubik", "Rum Raisin", "Satisfy", "Seymour", "Tiffany", "Trade Winds", "Kansas", "Unifraktur Cook", "Unifraktur Maguntia", "Varsity Block C", "Varsity Classic Serif A", "Varsity Classic Serif B", "Vibur", "Viga", "Wellfleet", "Wendy", "Yellowtail", "Fancy Block", "Old English", "Fancy Block 2", "SPL Script", "Varsity Classic D", "Varsity Block A", "Varsity Block B", "Varsity Block D", "Varsity Classic A", "Varsity Classic B", "Varsity Classic C"]
 		var customFonts = [];
 		var exportMeta = {}
 	</script>
@@ -308,7 +305,6 @@
 							<div id="uploadImageDiv">
 							<table style="width:100%;">
 								<tr>
-									<!--<input type="file" id="uploadedImg" accept="image/*" style="display:none;"/>-->
 									<td><center>
 										<input type="button" class="button" id="fakeImageButton" value="Upload An Image">
 									</td>
@@ -358,7 +354,7 @@
 							<table style="width:100%;">
 								<tr>
 									<td class="checkCell"><input type="checkbox" class="aboveTextureToggle textActiveToggle" data-id="textLogo" data-checkbox="textToggle" data-selector="textColorSelector" id="textLogoCheck"></td>
-									<td colspan="2"><label>Text: </label><input type="text" id="capText" value="L" style="width:79%; text-align:center;" disabled/></td>
+									<td colspan="2"><label>Text: </label><input type="text" id="capText" value="L" class='capText' style="width:79%; text-align:center;" disabled/></td>
 								</tr>
 							</table>
 							<table style="width:100%;" id="tableOne">
@@ -371,7 +367,7 @@
 							<table style="width:100%;">
 								<tr>
 									<td class="checkCell"><input type="checkbox" class="aboveTextureToggle textActiveToggle" data-id="textLogo2" data-checkbox="text2Toggle" data-selector="text2ColorSelector" id="textLogo2Check"></td>
-									<td colspan="2"><label>Text: </label><input type="text" id="capText2" value="A" style="width:79%; text-align:center;" disabled/></td>
+									<td colspan="2"><label>Text: </label><input type="text" id="capText2" class='capText' value="A" style="width:79%; text-align:center;" disabled/></td>
 								</tr>
 							</table>
 							<table style="width:100%;" id="tableTwo">
@@ -384,172 +380,75 @@
 							<table style="width:100%;">
 								<tr>
 									<td colspan="3">
-										<select id="fontTypeCombo" class='Graduate' style="width:100%;">
-											<optgroup class='Acme'>
-											<option value='Acme'>Acme</option>
-											</optgroup>
-											<optgroup class='AthleticGothic'>
-											<option value='AthleticGothic'>Athletic Gothic</option>
-											</optgroup>
-											<optgroup class='AthleticGothicShadow'>
-											<option value='AthleticGothicShadow'>Athletic Gothic Shadow</option>
-											</optgroup>
-											<optgroup class='BeavertonScript'>
-											<option value='BeavertonScript'>Fancy Block</option>
-											</optgroup>
-											<optgroup class='Berkshire_Swash'>
-											<option value='Berkshire_Swash'>Berkshire Swash</option>
-											</optgroup>
-											<optgroup class='Cantora_One'>
-											<option value='Cantora_One'>Cantora</option>
-											</optgroup>
-											<optgroup class='CaxtonRoman'>
-											<option value='CaxtonRoman'>Caxton Roman</option>
-											</optgroup>
-											<optgroup class='Chela_One'>
-											<option value='Chela_One'>Chela</option>
-											</optgroup>
-											<optgroup class='Circus'>
-											<option value='Circus'>Circus</option>
-											</optgroup>
-											<optgroup class='Condiment'>
-											<option value='Condiment'>Condiment</option>
-											</optgroup>
-											<optgroup class='Cookie'>
-											<option value='Cookie'>Cookie</option>
-											</optgroup>
-											<optgroup class='Courgette'>
-											<option value='Courgette'>Courgette</option>
-											</optgroup>
-											<optgroup class='Croissant_One'>
-											<option value='Croissant_One'>Croissant</option>
-											</optgroup>
-											<optgroup class='Damion'>
-											<option value='Damion'>Damion</option>
-											</optgroup>
-											<optgroup class='Engagement'>
-											<option value='Engagement'>Engagement</option>
-											</optgroup>
-											<optgroup class='RawlingsFancyBlock'>
-											<option value='RawlingsFancyBlock'>Fancy Block</option>
-											</optgroup>
-											<optgroup class='Germania_One'>
-											<option value='Germania_One'>Germania</option>
-											</optgroup>
-											<optgroup class='Graduate'>
-											<option value='Graduate' selected>Graduate</option>
-											</optgroup>
-											<optgroup class='Grand_Hotel'>
-											<option value='Grand_Hotel'>Grand Hotel</option>
-											</optgroup>
-											<optgroup class='Jockey_One'>
-											<option value='Jockey_One'>Jockey</option>
-											</optgroup>
-											<optgroup class='Kansas'>
-											<option value='Kansas'>Kansas Tuscan</option>
-											</optgroup>
-											<optgroup class='Kaushan_Script'>
-											<option value='Kaushan_Script'>Kaushan Script</option>
-											</optgroup>
-											<optgroup class='Leckerli_One'>
-											<option value='Leckerli_One'>Leckerli</option>
-											</optgroup>
-											<optgroup class='Lily_Script_One'>
-											<option value='Lily_Script_One'>Lily Script</option>
-											</optgroup>
-											<optgroup class='Lobster'>
-											<option value='Lobster'>Lobster</option>
-											</optgroup>
-											<optgroup class='Lobster_Two'>
-											<option value='Lobster_Two'>Lobster Two</option>
-											</optgroup>
-											<optgroup class='Metal_Mania'>
-											<option value='Metal_Mania'>Metal Mania</option>
-											</optgroup>
-											<optgroup class='Miniver'>
-											<option value='Miniver'>Miniver</option>
-											</optgroup>
-											<optgroup class='Molle'>
-											<option value='Molle'>Molle</option>
-											</optgroup>
-											<optgroup class='New_Rocker'>
-											<option value='New_Rocker'>New Rocker</option>
-											</optgroup>
-											<optgroup class='Norican'>
-											<option value='Norican'>Norican</option>
-											</optgroup>
-											<optgroup class='OldEnglish'>
-											<option value='OldEnglish'>Old English</option>
-											</optgroup>
-											<optgroup class='Oleo_Script'>
-											<option value='Oleo_Script'>Oleo Script</option>
-											</optgroup>
-											<optgroup class='Oleo_Script_Swash_Caps'>
-											<option value='Oleo_Script_Swash_Caps'>Oleo Script Swash Caps</option>
-											</optgroup>
-											<optgroup class='Pacifico'>
-											<option value='Pacifico'>Pacifico</option>
-											</optgroup>
-											<optgroup class='Pirata_One'>
-											<option value='Pirata_One'>Pirata</option>
-											</optgroup>
-											<optgroup class='Playball'>
-											<option value='Playball'>Playball</option>
-											</optgroup>
-											<optgroup class='ProFullBlock'>
-											<option value='ProFullBlock'>Pro Full Block</option>
-											</optgroup>
-											<optgroup class='Quicksand'>
-											<option value='Quicksand'>Quicksand</option>
-											</optgroup>
-											<optgroup class='RichardsonFancyBlock'>
-											<option value='RichardsonFancyBlock'>Richardson Block</option>
-											</optgroup>
-											<optgroup class='Rubik_One'>
-											<option value='Rubik_One'>Rubik</option>
-											</optgroup>
-											<optgroup class='Rum_Raisin'>
-											<option value='Rum_Raisin'>Rum Raisin</option>
-											</optgroup>
-											<optgroup class='Satisfy'>
-											<option value='Satisfy'>Satisfy</option>
-											</optgroup>
-											<optgroup class='Seymour_One'>
-											<option value='Seymour_One'>Seymour</option>
-											</optgroup>
-											<optgroup class='spl28'>
-											<option value='spl28'>SPL28 Script</option>
-											</optgroup>
-											<optgroup class='TiffanyRegular'>
-											<option value='TiffanyRegular'>Tiffany Regular</option>
-											</optgroup>
-											<optgroup class='Trade_Winds'>
-											<option value='Trade_Winds'>Trade Winds</option>
-											</optgroup>
-											<optgroup class='Tuscan'>
-											<option value='Tuscan'>Tuscan</option>
-											</optgroup>
-											<optgroup class='UnifrakturCook'>
-											<option value='UnifrakturCook'>Unifraktur Cook</option>
-											</optgroup>
-											<optgroup class='UnifrakturMaguntia'>
-											<option value='UnifrakturMaguntia'>Unifraktur Maguntia</option>
-											</optgroup>
-											<optgroup class='Vibur'>
-											<option value='Vibur'>Vibur</option>
-											</optgroup>
-											<optgroup class='Viga'>
-											<option value='Viga'>Viga</option>
-											</optgroup>
-											<optgroup class='Wellfleet'>
-											<option value='Wellfleet'>Wellfleet</option>
-											</optgroup>
-											<optgroup class='Wendy_One'>
-											<option value='Wendy_One'>Wendy</option>
-											</optgroup>
-											<optgroup class='Yellowtail'>
-											<option value='Yellowtail'>Yellowtail</option>
-											</optgroup>
+										<select id="fontTypeCombo" class="textOption" style="width:100%;">
+											<option data-image="./images/Acme.png" value="./fonts/Acme-Regular.ttf">Acme</option>
+											<option data-image="./images/All State.png" value="./fonts/all_state-webfont.ttf">All State</option>
+											<option data-image="./images/Athletic Gothic.png" value="./fonts/athletic_gothic-webfont.ttf">Athletic Gothic</option>
+											<option data-image="./images/Athletic Gothic Shadow.png" value="./fonts/athletic_gothic_shadow-webfont.ttf">Athletic Gothic Shadow</option>
+											<option data-image="./images/Beaverton Script.png" value="./fonts/beaverton_script-webfont.ttf">Beaverton Script</option>
+											<option data-image="./images/Berkshire Swash.png" value="./fonts/BerkshireSwash-Regular.ttf">Berkshire Swash</option>
+											<option data-image="./images/CantoraOne.png" value="./fonts/CantoraOne-Regular.ttf">CantoraOne</option>
+											<option data-image="./images/Caxton Roman.png" value="./fonts/caxton_roman-webfont.ttf">Caxton Roman</option>
+											<option data-image="./images/Chela One.png" value="./fonts/ChelaOne-Regular.ttf">Chela</option>
+											<option data-image="./images/Russell Circus.png" value="./fonts/circus-webfont.ttf">Russell Circus</option>
+											<option data-image="./images/Condiment.png" value="./fonts/Condiment-Regular.ttf">Condiment</option>
+											<option data-image="./images/Cookie.png" value="./fonts/Cookie-Regular.ttf">Cookie</option>
+											<option data-image="./images/Courgette.png" value="./fonts/Courgette-Regular.ttf">Courgette</option>
+											<option data-image="./images/Croissant One.png" value="./fonts/CroissantOne-Regular.ttf">Croissant</option>
+											<option data-image="./images/Damion.png" value="./fonts/Damion-Regular.ttf">Damion</option>
+											<option data-image="./images/Engagement.png" value="./fonts/Engagement-Regular.ttf">Engagement</option>
+											<option data-image="./images/Germania One.png" value="./fonts/GermaniaOne-Regular.ttf">Germania</option>
+											<option data-image="./images/Graduate.png" value="./fonts/Graduate-Regular.ttf" selected>Graduate</option>
+											<option data-image="./images/Grand Hotel.png" value="./fonts/GrandHotel-Regular.ttf">Grand Hotel</option>
+											<option data-image="./images/Jockey One.png" value="./fonts/JockeyOne-Regular.ttf">Jockey</option>
+											<option data-image="./images/Kaushan Script.png" value="./fonts/KaushanScript-Regular.ttf">Kaushan Script</option>
+											<option data-image="./images/Leckerli One.png" value="./fonts/LeckerliOne-Regular.ttf">Leckerli</option>
+											<option data-image="./images/Lily Script One.png" value="./fonts/LilyScriptOne-Regular.ttf">Lily Script</option>
+											<option data-image="./images/Lobster.png" value="./fonts/Lobster-Regular.ttf">Lobster</option>
+											<option data-image="./images/Lobster Two.png" value="./fonts/LobsterTwo-Regular.ttf">Lobster Two</option>
+											<option data-image="./images/Metal Mania.png" value="./fonts/MetalMania-Regular.ttf">Metal Mania</option>
+											<option data-image="./images/Miniver.png" value="./fonts/Miniver-Regular.ttf">Miniver</option>
+											<option data-image="./images/MLB Block.png" value="./fonts/MLBBlock.ttf">MLB Block</option>
+											<option data-image="./images/MLB Cubs.png" value="./fonts/MLBCubs.ttf">MLB Chicago N</option>
+											<option data-image="./images/MLB Red Sox.png" value="./fonts/MLBRedSox.ttf">McAuliffe</option>
+											<option data-image="./images/Molle.png" value="./fonts/Molle-Regular.ttf">Molle</option>
+											<option data-image="./images/New Rocker.png" value="./fonts/NewRocker-Regular.ttf">New Rocker</option>
+											<option data-image="./images/Norican.png" value="./fonts/Norican-Regular.ttf">Norican</option>
+											<option data-image="./images/Oleo Script.png" value="./fonts/OleoScript-Regular.ttf">Oleo Script</option>
+											<option data-image="./images/Pacifico.png" value="./fonts/Pacifico.ttf">Pacifico</option>
+											<option data-image="./images/Pirata One.png" value="./fonts/PirataOne-Regular.ttf">Pirata</option>
+											<option data-image="./images/Playball.png" value="./fonts/Playball-Regular.ttf">Playball</option>
+											<option data-image="./images/Pro Full Block.png" value="./fonts/pro_full_block-webfont.ttf">Pro Full Block</option>
+											<option data-image="./images/Quicksand.png" value="./fonts/Quicksand-Regular.ttf">Quicksand</option>
+											<option data-image="./images/Rubik Mono One.png" value="./fonts/RubikMonoOne-Regular.ttf">Rubik Mono</option>
+											<option data-image="./images/Rubik One.png" value="./fonts/RubikOne-Regular.ttf">Rubik</option>
+											<option data-image="./images/Rum Raisin.png" value="./fonts/RumRaisin-Regular.ttf">Rum Raisin</option>
+											<option data-image="./images/Satisfy.png" value="./fonts/Satisfy-Regular.ttf">Satisfy</option>
+											<option data-image="./images/Seymour One.png" value="./fonts/SeymourOne-Regular.ttf">Seymour</option>
+											<option data-image="./images/UA Tiffany.png" value="./fonts/tiffany-webfont.ttf">Tiffany</option>
+											<option data-image="./images/Trade Winds.png" value="./fonts/TradeWinds-Regular.ttf">Trade Winds</option>
+											<option data-image="./images/Kansas.png" value="./fonts/tuscan-webfont.ttf">Kansas</option>
+											<option data-image="./images/UnifrakturCook.png" value="./fonts/UnifrakturCook-Bold.ttf">Unifraktur Cook</option>
+											<option data-image="./images/UnifrakturMaguntia.png" value="./fonts/UnifrakturMaguntia-Book.ttf">Unifraktur Maguntia</option>
+											<option data-image="./images/Varsity Block C.png" value="./fonts/VarsityBlockC.ttf">Varsity Block C</option>
+											<option data-image="./images/Varsity Classic Serif A.png" value="./fonts/VarsityClassicSerifA.ttf">Varsity Classic Serif A</option>
+											<option data-image="./images/Varsity Classic Serif B.png" value="./fonts/VarsityClassicSerifB.ttf">Varsity Classic Serif B</option>
+											<option data-image="./images/Vibur.png" value="./fonts/Vibur-Regular.ttf">Vibur</option>
+											<option data-image="./images/Viga.png" value="./fonts/Viga-Regular.ttf">Viga</option>
+											<option data-image="./images/Wellfleet.png" value="./fonts/Wellfleet-Regular.ttf">Wellfleet</option>
+											<option data-image="./images/Wendy One.png" value="./fonts/WendyOne-Regular.ttf">Wendy</option>
+											<option data-image="./images/Yellowtail.png" value="./fonts/Yellowtail-Regular.ttf">Yellowtail</option>
+											<option data-image="./images/Rawlings Fancy Block.png" value="./fonts/rawlingsfancyblock-regular-webfont.ttf">Fancy Block</option>
+											<option data-image="./images/Rawlings Old English.png" value="./fonts/rawlingsoldenglish-webfont.ttf">Old English</option>
+											<option data-image="./images/Richardson Fancy Block.png" value="./fonts/richardson_fancy_block-webfont.ttf">Fancy Block 2</option>
+											<option data-image="./images/SPL28Script.png" value="./fonts/spl28script-webfont.ttf">SPL Script</option>
+											<option data-image="./images/VarsityClassicD.png" value="./fonts/VarsityClassicD.ttf">Varsity Classic D</option>
+											<option data-image="./images/VarsityBlockA.png" value="./fonts/VarsityBlockA.ttf">Varsity Block A</option>
+											<option data-image="./images/VarsityBlockB.png" value="./fonts/VarsityBlockB.ttf">Varsity Block B</option>
+											<option data-image="./images/VarsityBlockD.png" value="./fonts/VarsityBlockD.ttf">Varsity Block D</option>
+											<option data-image="./images/VarsityClassicA.png" value="./fonts/VarsityClassicA.ttf">Varsity Classic A</option>
+											<option data-image="./images/VarsityClassicB.png" value="./fonts/VarsityClassicB.ttf">Varsity Classic B</option>
+											<option data-image="./images/VarsityClassicC.png" value="./fonts/VarsityClassicC.ttf">Varsity Classic C</option>
 										</select>
 									</td>
 								</tr>
@@ -625,7 +524,6 @@
 </div>
 </body>
 <script>
-	console.log($("#loadButton").val())
 	require('./renderer.js')
 	var original_color;
 	//var makersMark;
@@ -663,6 +561,7 @@
 	logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
 
 	$(document).ready(function() {
+		ipcRenderer.send('local-font-folder', null)
 		$("#textureSelect").val(defaultTexture)
 		$("#preferredColorFormat").val(prefColorFormat)
 		$("#preferredTexture").val(prefTexture)
@@ -708,65 +607,187 @@
 				}
 			})
 		})
+		let fontDropdown = new MsDropdown(document.getElementById("fontTypeCombo"), {visibleRows: 5})
+		$(".ms-dd").addClass("disabled")
 	});
-	
-/* 	$("#colorFormat").on("change",function(e) {
-		$.localStorage.setItem('capmaker.color_format', $(this).val());
-		$("#capColor").spectrum("option", "preferredFormat", $(this).val());
-		$(".selector").spectrum("option", "preferredFormat", $(this).val());
-		$(".colorSelector").spectrum("option", "preferredFormat", $(this).val());
-	}); */
 
 	$(".preferenceSelect").on("change",function(e) {
 		const pref = $(this).attr("id")
 		const val = $(this).val()
-		$.ajax({
-			type: "POST",
-			url: "http://127.0.0.1:"+port+"/setPreference",
-			data: {pref:pref,val:val},
-			success: function(result) {
-			}
-		})
+		ipcRender.send('set-preference', {pref:pref,val:val})
 	})
 	
 	initializeCanvas();
 	
     $("#fontTypeCombo").on("change",function() {
-		const style = $(this).val();
-		const font_family = $("."+style).css("font-family");
-		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
-		g.getObjects().forEach(function(o) {
-			o.set("fontFamily", font_family)
-			textLogo.dirty = true;
-		})
-		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
-		g.getObjects().forEach(function(o) {
-			o.set("fontFamily", font_family)
-			textLogo2.dirty = true;
-		})
-		logoCanvas.renderAll();
-		$(this).removeClass().addClass(style);
+		wordmarkChange($('#fontTypeCombo').val(),false)
 	})
 	
-	$("#capText").on("keyup",function() {
-		const letter = $(this).val()
-		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
-		g.getObjects().forEach(function(o) {
-			o.set("text", letter)
-			textLogo.dirty = true;
-		})
-		logoCanvas.renderAll();
+	$(".capText").on("keyup",function() {
+		wordmarkChange($('#fontTypeCombo').val(),false)
 	})
-	
-	$("#capText2").on("keyup",function() {
-		const letter = $(this).val()
-		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
-		g.getObjects().forEach(function(o) {
-			o.set("text", letter)
-			textLogo2.dirty = true;
+
+	function wordmarkChange(data,newFont) {
+		var tmp = (data.fontPath == undefined) ? data : data.fontPath;
+		opentype.load(tmp, (err,font) => {
+			if (err || !font) {
+				log.error(err)
+				return;
+			}
+
+			var grp = logoCanvas.getObjects("group").find(o => o.id === "textLogo")
+			var grp2 = logoCanvas.getObjects("group").find(o => o.id === "textLogo2")
+
+			grp.getObjects('path').forEach(function(o) {
+				grp.removeWithUpdate(o)
+			})
+
+			grp2.getObjects('path').forEach(function(o) {
+				grp2.removeWithUpdate(o)
+			})
+
+			const path = font.getPath($("#capText").val(),95,275,40)
+			const svgPath = path.toPathData(5)
+
+			capLogoText = new fabric.Path(svgPath,{
+				left: 95,
+				top: 275,
+				originX: 'center',
+				originY: 'center',
+				centeredScaling: true,
+				centeredRotation: true,
+				id: 'capLogoText',
+				fill: $("#capLogoTextColor").spectrum("get")
+			})
+			
+			capLogoTextStroke1 = new fabric.Path(svgPath,{
+				originX: 'center',
+				originY: 'center',
+				left: 95,
+				top: 275,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: $("#capLogoStroke1Color").spectrum("get"),
+				strokeWidth: 4,
+				strokeLineCap: "round",
+				id: 'capLogoTextStroke1',
+				fill: $("#capLogoStroke1Color").spectrum("get")
+			})
+			
+			capLogoTextStroke2 = new fabric.Path(svgPath,{
+				originX: 'center',
+				originY: 'center',
+				left: 95,
+				top: 275,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: $("#capLogoStroke2Color").spectrum("get"),
+				strokeWidth: 6,
+				strokeLineCap: "round",
+				id: 'capLogoTextStroke2',
+				fill: $("#capLogoStroke2Color").spectrum("get")
+			})
+
+			textLogo.addWithUpdate(capLogoTextStroke2)
+			textLogo.addWithUpdate(capLogoTextStroke1)
+			textLogo.addWithUpdate(capLogoText)
+
+			const path2 = font.getPath($("#capText2").val(),115,295,40)
+			const svgPath2 = path2.toPathData(5)
+
+			capLogo2Text = new fabric.Path(svgPath2,{
+				left: 115,
+				top: 295,
+				originX: 'center',
+				originY: 'center',
+				centeredScaling: true,
+				centeredRotation: true,
+				id: 'capLogo2Text',
+				fill: $("#capLogo2TextColor").spectrum("get")
+			})
+			
+			capLogo2TextStroke1 = new fabric.Path(svgPath2,{
+				originX: 'center',
+				originY: 'center',
+				left: 115,
+				top: 295,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: $("#capLogo2Stroke1Color").spectrum("get"),
+				strokeWidth: 4,
+				strokeLineCap: "round",
+				id: 'capLogo2TextStroke1',
+				fill: $("#capLogo2Stroke1Color").spectrum("get")
+			})
+			
+			capLogo2TextStroke2 = new fabric.Path(svgPath2,{
+				originX: 'center',
+				originY: 'center',
+				left: 115,
+				top: 295,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: $("#capLogo2Stroke2Color").spectrum("get"),
+				strokeWidth: 6,
+				strokeLineCap: "round",
+				id: 'capLogo2TextStroke2',
+				fill: $("#capLogo2Stroke2Color").spectrum("get")
+			})
+
+			textLogo2.addWithUpdate(capLogo2TextStroke2)
+			textLogo2.addWithUpdate(capLogo2TextStroke1)
+			textLogo2.addWithUpdate(capLogo2Text)
+
+			logoCanvas.renderAll()
+
+			/* if (newFont) {
+				var thumbText = font.getPath("ABC 123", 0, 0, 96)
+				var outPath = thumbText.toPathData(5)
+
+				var foo = new fabric.Path(outPath, {
+					fill: 'black',
+					top: 0,
+					left: 0
+				})
+
+				//refreshDropdowns("cap",data,foo)
+
+				//updateDDSlick("cap",addData,addData2)
+			} */
+			if (newFont) {
+				var thumbText = font.getPath("ABC 123", 0, 0, 96)
+				var outPath = thumbText.toPathData(5)
+
+				var thumb = new fabric.Path(outPath, {
+					fill: 'black',
+					top: 0,
+					left: 0
+				})
+
+				data.thumb = thumb.toDataURL()
+				customFonts.push(data)
+
+				const dropdown = document.getElementById("fontTypeCombo").msDropdown;
+
+				const displayName = (data.fontStyle == "Regular") ? data.fontName : data.fontName +" "+data.fontStyle
+
+				const idx = findIndexByText(dropdown, displayName)
+
+				if (idx == -1) {
+					dropdown.add({text:displayName, value:data.fontPath, image:thumb.toDataURL()},0)
+					dropdown.selectedIndex = 0			
+				} else {
+					dropdown.selectedIndex = idx
+				}
+				const selectedFont = $("#fontTypeCombo").val()
+				$("#fontTypeCombo").html($('#fontTypeCombo option').sort(function(x, y) {
+					return $(x).text().toLowerCase() < $(y).text().toLowerCase() ? -1 : 1;
+				}))
+				$("#fontTypeCombo").val(selectedFont)
+
+			}
 		})
-		logoCanvas.renderAll();
-	})
+	}
 	
 	$(".selector").each(function() {
 		var color = $(this).attr('id');
@@ -1200,114 +1221,127 @@
 			selectable:false,
 			id:'eyeletGroup'
 		});
-		
-		capLogoText = new fabric.Text('L',{
-			fontFamily: 'Graduate',
-			fontsize: 60,
-			originX: 'center',
-			originY: 'center',
-			textAlign: 'center',
-			left: 95,
-			top: 275,
-			centeredScaling: true,
-			centeredRotation: true,
-			id: 'capLogoText',
-			fill: initialColors["capLogoTextColor"]
+
+		opentype.load("./fonts/Graduate-Regular.ttf", (err,font) => {
+			if (err || !font) {
+				log.error(err)
+				return;
+			}
+
+			const path = font.getPath("L",95,275,40)
+			const svgPath = path.toPathData(5)
+
+			capLogoText = new fabric.Path(svgPath,{
+				left: 95,
+				top: 275,
+				originX: 'center',
+				originY: 'center',
+				centeredScaling: true,
+				centeredRotation: true,
+				id: 'capLogoText',
+				fill: initialColors["capLogoTextColor"]
+			})
+			
+			capLogoTextStroke1 = new fabric.Path(svgPath,{
+				originX: 'center',
+				originY: 'center',
+				left: 95,
+				top: 275,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: initialColors["capLogoStroke1Color"],
+				strokeWidth: 4,
+				strokeLineCap: "round",
+				id: 'capLogoTextStroke1',
+				fill: initialColors["capLogoStroke1Color"]
+			})
+			
+			capLogoTextStroke2 = new fabric.Path(svgPath,{
+				originX: 'center',
+				originY: 'center',
+				left: 95,
+				top: 275,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: initialColors["capLogoStroke2Color"],
+				strokeWidth: 6,
+				strokeLineCap: "round",
+				id: 'capLogoTextStroke2',
+				fill: initialColors["capLogoStroke2Color"]
+			})
+			
+			textLogo = new fabric.Group ([])
+			textLogo.set({
+				visible:false,
+				id:'textLogo',
+				description: "Cap Text #1"
+			});
+
+			textLogo.addWithUpdate(capLogoTextStroke2)
+			textLogo.addWithUpdate(capLogoTextStroke1)
+			textLogo.addWithUpdate(capLogoText)
+
+			logoCanvas.add(textLogo);
+
+			const path2 = font.getPath("A",115,295,40)
+			const svgPath2 = path2.toPathData(5)
+
+			capLogo2Text = new fabric.Path(svgPath2,{
+				left: 115,
+				top: 295,
+				originX: 'center',
+				originY: 'center',
+				centeredScaling: true,
+				centeredRotation: true,
+				id: 'capLogo2Text',
+				fill: initialColors["capLogoTextColor"]
+			})
+			
+			capLogo2TextStroke1 = new fabric.Path(svgPath2,{
+				originX: 'center',
+				originY: 'center',
+				left: 115,
+				top: 295,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: initialColors["capLogoStroke1Color"],
+				strokeWidth: 4,
+				strokeLineCap: "round",
+				id: 'capLogo2TextStroke1',
+				fill: initialColors["capLogoStroke1Color"]
+			})
+			
+			capLogo2TextStroke2 = new fabric.Path(svgPath2,{
+				originX: 'center',
+				originY: 'center',
+				left: 115,
+				top: 295,
+				centeredScaling: true,
+				centeredRotation: true,
+				stroke: initialColors["capLogoStroke2Color"],
+				strokeWidth: 6,
+				strokeLineCap: "round",
+				id: 'capLogo2TextStroke2',
+				fill: initialColors["capLogoStroke2Color"]
+			})
+			
+			textLogo2 = new fabric.Group ([])
+			textLogo2.set({
+				visible:false,
+				id:'textLogo2',
+				description: "Cap Text #2"
+			});
+
+			textLogo2.addWithUpdate(capLogo2TextStroke2)
+			textLogo2.addWithUpdate(capLogo2TextStroke1)
+			textLogo2.addWithUpdate(capLogo2Text)
+
+			logoCanvas.add(textLogo2);
+
+			let eyelets = logoCanvas.getObjects('group').find(o => o.id == "eyeletGroup")
+			eyelets.bringToFront()
 		})
 		
-		capLogoTextStroke1 = new fabric.Text('L',{
-			fontFamily: 'Graduate',
-			fontsize: 60,
-			originX: 'center',
-			originY: 'center',
-			textAlign: 'center',
-			left: 95,
-			top: 275,
-			centeredScaling: true,
-			centeredRotation: true,
-			stroke: initialColors["capLogoStroke1Color"],
-			strokeWidth: 4,
-			strokeLineCap: "round",
-			id: 'capLogoTextStroke1',
-			fill: initialColors["capLogoStroke1Color"]
-		})
-		
-		capLogoTextStroke2 = new fabric.Text('L',{
-			fontFamily: 'Graduate',
-			fontsize: 60,
-			originX: 'center',
-			originY: 'center',
-			textAlign: 'center',
-			left: 95,
-			top: 275,
-			centeredScaling: true,
-			centeredRotation: true,
-			stroke: initialColors["capLogoStroke2Color"],
-			strokeWidth: 6,
-			strokeLineCap: "round",
-			id: 'capLogoTextStroke2',
-			fill: initialColors["capLogoStroke2Color"]
-		})
-		
-		textLogo = new fabric.Group ([capLogoTextStroke2, capLogoTextStroke1, capLogoText])
-		textLogo.set({
-			visible:false,
-			id:'textLogo'
-		});
-		
-		capLogo2Text = new fabric.Text('A',{
-			fontFamily: 'Graduate',
-			fontsize: 60,
-			originX: 'center',
-			originY: 'center',
-			textAlign: 'center',
-			left: 115,
-			top: 295,
-			centeredScaling: true,
-			centeredRotation: true,
-			id: 'capLogo2Text',
-			fill: initialColors["capLogo2TextColor"]
-		})
-		
-		capLogo2TextStroke1 = new fabric.Text('A',{
-			fontFamily: 'Graduate',
-			fontsize: 60,
-			originX: 'center',
-			originY: 'center',
-			textAlign: 'center',
-			left: 115,
-			top: 295,
-			centeredScaling: true,
-			centeredRotation: true,
-			stroke: initialColors["capLogo2Stroke1Color"],
-			strokeWidth: 4,
-			strokeLineCap: "round",
-			id: 'capLogo2TextStroke1',
-			fill: initialColors["capLogo2Stroke1Color"]
-		})
-		
-		capLogo2TextStroke2 = new fabric.Text('A',{
-			fontFamily: 'Graduate',
-			fontsize: 60,
-			originX: 'center',
-			originY: 'center',
-			textAlign: 'center',
-			left: 115,
-			top: 295,
-			centeredScaling: true,
-			centeredRotation: true,
-			stroke: initialColors["capLogo2Stroke2Color"],
-			strokeWidth: 6,
-			strokeLineCap: "round",
-			id: 'capLogo2TextStroke2',
-			fill: initialColors["capLogo2Stroke2Color"]
-		})
-		
-		textLogo2 = new fabric.Group ([capLogo2TextStroke2, capLogo2TextStroke1, capLogo2Text])
-		textLogo2.set({
-			visible:false,
-			id:'textLogo2'
-		});
 		
 		below.add(capColor);
 		below.add(underBrimColor);
@@ -1333,8 +1367,6 @@
 		logoCanvas.add(braidStripeOuterColor);
 		logoCanvas.add(frontPanelBorderColor);
 		logoCanvas.add(smallPanelBorderColor);
-		logoCanvas.add(textLogo);
-		logoCanvas.add(textLogo2);
 		logoCanvas.add(eyeletGroup);
 		logoCanvas.add(scrambledEggColor);
 
@@ -1457,14 +1489,7 @@
 		exportCtx.drawImage(composite,0,0);
 		exportCtx.drawImage(can4,0,0);
 		
-		$.ajax({
-			type: "POST",
-			url: "http://127.0.0.1:"+port+"/savecap",
-			data: {imgdata:finalCanvas.toDataURL(),name:fileName,canvas:JSON.stringify(exportMeta,null,2)},
-			success: function(result) {
-
-			}
-		})
+		ipcRenderer.send('save-cap', {imgdata:finalCanvas.toDataURL(),name:fileName,canvas:JSON.stringify(exportMeta,null,2)})
 		
 		logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
 	})
@@ -1600,14 +1625,6 @@
 		logoCanvas.renderAll();
 	})
 
-	$("#uploadedImg").on("click",function() {
-		$.ajax({
-			type: "POST",
-			url: "http://127.0.0.1:"+port+"/uploadImage",
-			success: function(data) {}
-		});
-	})
-
 	$("#textureSelect").on("change",function() {
 		switch ($(this).val()) {
 			case null:
@@ -1636,40 +1653,37 @@
 	})
 	
 	$("#fakeImageButton").on("click",function() {
-		$.ajax({
-			type: "GET",
-			url: "http://127.0.0.1:"+port+"/uploadImage",
-			success: function(data) {
-				var imgObj = new Image();
-				imgObj.src = data;
-				imgObj.onload = function () {
-					var image = new fabric.Image(imgObj);
-					image.set({
-						originX: 'center',
-						originY: 'center',
-						left: imLeft,
-						top: imTop,
-						perPixelTargetFind: true,
-						centeredScaling: true,
-						centeredRotation: true,
-						name: makeid(10)
-					});
-					image.resizeFilters.push(new fabric.Image.filters.Resize({
-						resizeType: 'lanczos', // typo fixed
-						lanczosLobes: 2 // typo fixed
-					}));
-					image.on('object:modified',function() {
-						imLeft = image.get('left')
-						imTop = image.get('top');
-					})
-					var h = image.height;
-					var w = image.width;
-					logoCanvas.add(image);
-					image.sendToBack();
-					console.log(logoCanvas)
-				}
-			}
-		});
+		ipcRenderer.send('upload-image', null)
+	})
+
+	ipcRenderer.on('upload-image-response', (event, data) => {
+		var imgObj = new Image();
+		imgObj.src = data.image;
+		imgObj.onload = function () {
+			var image = new fabric.Image(imgObj);
+			image.set({
+				originX: 'center',
+				originY: 'center',
+				left: imLeft,
+				top: imTop,
+				perPixelTargetFind: true,
+				centeredScaling: true,
+				centeredRotation: true,
+				name: data.filename
+			});
+			image.resizeFilters.push(new fabric.Image.filters.Resize({
+				resizeType: 'lanczos', // typo fixed
+				lanczosLobes: 2 // typo fixed
+			}));
+			image.on('object:modified',function() {
+				imLeft = image.get('left')
+				imTop = image.get('top');
+			})
+			var h = image.height;
+			var w = image.width;
+			logoCanvas.add(image);
+			image.sendToBack();
+		}
 	})
 	
 	$("#removeWhite").on("click",function(e) {
@@ -1873,6 +1887,102 @@
 		}
 	})
 
+	ipcRenderer.on('replace-color-response', (event, data) => {
+		if (logoCanvas.getActiveObject()) {
+			var object = logoCanvas.getActiveObject()
+			if (object.get('type') == "image") {
+				var pictureName = object.get('name');
+				var imgObj = new Image();
+				imgObj.src = data;
+				imgObj.onload = function () {
+					var image = new fabric.Image(imgObj);
+					image.set({
+						originX: 'center',
+						originY: 'center',
+						left: imLeft,
+						top: imTop,
+						perPixelTargetFind: true,
+						centeredScaling: true,
+						centeredRotation: true,
+						name: pictureName,
+					});
+					
+					image.resizeFilters.push(new fabric.Image.filters.Resize({
+						resizeType: 'lanczos',
+						lanczosLobes: 2
+					}));
+					
+					image.on('object:modified',function() {
+						imLeft = image.get('left');
+						imTop = image.get('top');
+					});
+					
+					logoCanvas.remove(object);
+					logoCanvas.add(image);
+					logoCanvas.renderAll();
+					imLeft = image.get('left');
+					imTop = image.get('top');
+					$("#colorSquare").val("Select Color");
+					$("#colorSquare").css("background","#FFFFFF");
+					$("#colorSquare").css("color","#000000");
+					$("#overlay").css("display","none");
+				}
+			}
+		}
+	})
+
+	ipcRenderer.on('imagemagick-response', (event, data) => {
+		$("#overlay").css("display","none");
+		var object = logoCanvas.getActiveObject()
+		var pictureName = object.get('id');
+		var imgObj = new Image();
+		imgObj.src = data;
+		imgObj.onload = function () {
+			var image = new fabric.Image(imgObj);
+			image.set({
+				originX: 'center',
+				originY: 'center',
+				left: imLeft,
+				top: imTop,
+				perPixelTargetFind: true,
+				centeredScaling: true,
+				centeredRotation: true,
+				borderColor: 'red',
+				cornerColor: 'yellow',
+				cornerSize: 12,
+				id: pictureName,
+				transparentCorners: false
+			});
+			
+			image.filters.push(new fabric.Image.filters.Resize({
+				resizeType: 'lanczos',
+				lanczosLobes: 2
+			}));
+			
+			image.on('object:modified',function() {
+				imLeft = image.get('left')
+				imTop = image.get('top');
+			});
+
+			image.on('selected',function() {
+				$("#straightenObject").css("display","inline-block");
+				$("#fileName").html(image.get('id'));
+				if ($("#trimImageDiv").css("display") == "none") {
+					$("#trimImageDiv").css("display","block");
+					$("#uploadImageDiv").css("display","none");
+					$("#selectedImageDiv").css("display","block");
+				}
+				$("#tipContainer").html("Use Arrow keys to move image 1 pixel.<br>Use Shift + Arrow keys to move image 10 pixels.<br>Use Delete key to remove image");
+			})
+			
+			logoCanvas.remove(object);
+			logoCanvas.add(image);
+			logoCanvas.renderAll();
+			imLeft = image.get('left')
+			imTop = image.get('top');
+		}
+	})
+
 	$("#removeColorRange").on("click",function(e) {
 		var x = $(this).data("x");
 		var y = $(this).data("y");
@@ -1882,52 +1992,60 @@
 		if (logoCanvas.getActiveObject()) {
 			var object = logoCanvas.getActiveObject()
 			if (object.get('type') == "image") {
-				var pictureName = object.get('name');
+				//$("#overlay").css("display","inline-block");
+				const pictureName = object.get('id');
 				$("#colorSquare").removeClass("colorSquareActive").removeClass("colorSquareSelected");
 				var theImage = object._originalElement.currentSrc;
-				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();			
-				$.ajax({
-					type: "POST",
-					url: "http://127.0.0.1:"+port+"/removeColorRange",
-					data: {imgdata: theImage, x: x, y: y, color: color, action: action, fuzz: fuzz, filename: pictureName},
-					success: function(data) {
-						var imgObj = new Image();
-						imgObj.src = data;
-						imgObj.onload = function () {
-							var image = new fabric.Image(imgObj);
-							image.set({
-								originX: 'center',
-								originY: 'center',
-								left: imLeft,
-								top: imTop,
-								perPixelTargetFind: true,
-								centeredScaling: true,
-								centeredRotation: true,
-								name: pictureName,
-							});
-							
-							image.resizeFilters.push(new fabric.Image.filters.Resize({
-								resizeType: 'lanczos',
-								lanczosLobes: 2
-							}));
-							
-							image.on('object:modified',function() {
-								imLeft = image.get('left');
-								imTop = image.get('top');
-							});
-							
-							logoCanvas.remove(object);
-							logoCanvas.add(image);
-							logoCanvas.renderAll();
-							imLeft = image.get('left');
-							imTop = image.get('top');
-							$("#colorSquare").val("Select Color");
-							$("#colorSquare").css("background","#FFFFFF");
-							$("#colorSquare").css("color","#000000");
-							$("#overlay").css("display","none");
+				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();
+				const img = new Image();
+				img.onload = function() {
+					const canvas = document.createElement('canvas');
+					const ctx = canvas.getContext('2d');
+
+					canvas.width = img.width;
+					canvas.height = img.height;
+
+					ctx.drawImage(img, 0, 0);
+
+					const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+					const pixels = imageData.data;
+					const startIndex = (y * canvas.width + x) * 4;
+					const baseColor = {
+						r: pixels[startIndex],
+						g: pixels[startIndex + 1],
+						b: pixels[startIndex + 2],
+						a: pixels[startIndex + 3] // Get alpha channel value
+					};
+
+					const stack = [{ x: x, y: y }];
+
+					while (stack.length) {
+						const { x, y } = stack.pop();
+						const index = (y * canvas.width + x) * 4;
+
+						if (
+							x >= 0 && x < canvas.width &&
+							y >= 0 && y < canvas.height &&
+							isColorMatchAlpha(pixels, index, baseColor, replacementColor, fuzz)
+						) {
+							pixels[index] = replacementColor.r;
+							pixels[index + 1] = replacementColor.g;
+							pixels[index + 2] = replacementColor.b;
+							pixels[index + 3] = replacementColor.a; // Set alpha channel value
+
+							stack.push({ x: x + 1, y: y });
+							stack.push({ x: x - 1, y: y });
+							stack.push({ x: x, y: y + 1 });
+							stack.push({ x: x, y: y - 1 });
 						}
 					}
-				})
+
+					ctx.putImageData(imageData, 0, 0);
+
+					//document.body.appendChild(canvas);
+					ipcRenderer.send('replace-color', canvas.toDataURL())
+				};
+				img.src = object._originalElement.currentSrc;
 				return false;
 			}
 		}
@@ -1943,52 +2061,46 @@
 			var object = logoCanvas.getActiveObject()
 			if (object.get('type') == "image") {
 				$("#overlay").css("display","inline-block");
-				var pictureName = object.get('name');
+				var pictureName = object.get('id');
 				$("#colorSquare").removeClass("colorSquareActive").removeClass("colorSquareSelected");
 				var theImage = object._originalElement.currentSrc;
-				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();			
-				$.ajax({
-					type: "POST",
-					url: "http://127.0.0.1:"+port+"/removeAllColor",
-					data: {imgdata: theImage, x: x, y: y, color: color, action: action, fuzz: fuzz, filename: pictureName},
-					success: function(data) {
-						var imgObj = new Image();
-						imgObj.src = data;
-						imgObj.onload = function () {
-							var image = new fabric.Image(imgObj);
-							image.set({
-								originX: 'center',
-								originY: 'center',
-								left: imLeft,
-								top: imTop,
-								perPixelTargetFind: true,
-								centeredScaling: true,
-								centeredRotation: true,
-								name: pictureName
-							});
-							
-							image.resizeFilters.push(new fabric.Image.filters.Resize({
-								resizeType: 'lanczos',
-								lanczosLobes: 2
-							}));
-							
-							image.on('object:modified',function() {
-								imLeft = image.get('left');
-								imTop = image.get('top');
-							});
-							
-							logoCanvas.remove(object);
-							logoCanvas.add(image);
-							logoCanvas.renderAll();
-							imLeft = image.get('left');
-							imTop = image.get('top');
-							$("#colorSquare").val("Select Color");
-							$("#colorSquare").css("background","#FFFFFF");
-							$("#colorSquare").css("color","#000000");
-							$("#overlay").css("display","none");
+				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();	
+				const img = new Image();
+				
+				img.onload = function() {
+					const canvas = document.createElement('canvas');
+					const ctx = canvas.getContext('2d');
+
+					canvas.width = img.width;
+					canvas.height = img.height;
+
+					ctx.drawImage(img, 0, 0);
+
+					const pixelData = ctx.getImageData(x, y, 1, 1).data; // Get pixel data at coordinates (x, y)
+					const color = { r: pixelData[0], g: pixelData[1], b: pixelData[2] }; // Extract RGB values from pixel data
+
+					const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+					const pixels = imageData.data;
+
+					for (let i = 0; i < pixels.length; i += 4) {
+						const r = pixels[i];
+						const g = pixels[i + 1];
+						const b = pixels[i + 2];
+						const a = pixels[i + 3];
+
+						if (isColorWithinTolerance({ r, g, b }, color, fuzz)) {
+							pixels[i] = replacementColor.r;
+							pixels[i + 1] = replacementColor.g;
+							pixels[i + 2] = replacementColor.b;
+							pixels[i + 3] = 0; // Set alpha channel to 0 for transparency
 						}
 					}
-				})
+
+					ctx.putImageData(imageData, 0, 0);
+
+					ipcRenderer.send('replace-color', canvas.toDataURL())
+				};
+				img.src = object._originalElement.currentSrc;		
 				return false;
 			}
 		}
@@ -2003,62 +2115,111 @@
 			$("#replaceColorDiv").slideToggle();
 		}
 	})
-	
+
 	$("#replaceColorSubmit").on("click",function(e) {
 		var action = $(this).data("action");
 		var x = $(this).data("x");
 		var y = $(this).data("y");
 		var color = $("#colorSquare").val();
 		var newcolor = $("#replacementColor").spectrum("get").toHexString();
-		var fuzz = (parseInt($("#colorFuzz").val()))/100;
+		newcolor = hexToRgb(newcolor)
+		var fuzz = parseInt($("#colorFuzz").val());
 		if (logoCanvas.getActiveObject()) {
 			var object = logoCanvas.getActiveObject()
 			if (object.get('type') == "image") {
-				var pictureName = object.get('name');
+				var pictureName = object.get('id');
 				$("#colorSquare").removeClass("colorSquareActive").removeClass("colorSquareSelected");
 				
 				var theImage = object._originalElement.currentSrc;
 
 				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();
-				
-				$.ajax({
-					type: "POST",
-					url: "http://127.0.0.1:"+port+"/replaceColor",
-					data: {imgdata: theImage, x: x, y: y, action: action, color: color, newcolor: newcolor, fuzz: fuzz, filename: pictureName},
-					success: function(data) {
-						var imgObj = new Image();
-						imgObj.src = data;
-						imgObj.onload = function () {
-							var image = new fabric.Image(imgObj);
-							image.set({
-								originX: 'center',
-								originY: 'center',
-								left: imLeft,
-								top: imTop,
-								perPixelTargetFind: true,
-								centeredScaling: true,
-								centeredRotation: true,
-								name: pictureName
-							});
-							
-							image.resizeFilters.push(new fabric.Image.filters.Resize({
-								resizeType: 'lanczos',
-								lanczosLobes: 2
-							}));
-							
-							image.on('object:modified',function() {
-								imLeft = image.get('left')
-								imTop = image.get('top');
-							});
-							
-							logoCanvas.remove(object);
-							logoCanvas.add(image);
-							logoCanvas.renderAll();
-							imLeft = image.get('left')
-							imTop = image.get('top');
+
+				const img = new Image()
+				if (action == "replaceColorRange") {
+					console.log("replace color range")
+					img.onload = function() {
+						const canvas = document.createElement('canvas');
+						const ctx = canvas.getContext('2d');
+
+						canvas.width = img.width;
+						canvas.height = img.height;
+
+						ctx.drawImage(img, 0, 0);
+
+						const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+						const pixels = imageData.data;
+						const startIndex = (y * canvas.width + x) * 4;
+						const baseColor = {
+							r: pixels[startIndex],
+							g: pixels[startIndex + 1],
+							b: pixels[startIndex + 2]
+						};
+
+						const stack = [{ x: x, y: y }];
+
+						while (stack.length) {
+							const { x, y } = stack.pop();
+							const index = (y * canvas.width + x) * 4;
+
+							if (
+								x >= 0 && x < canvas.width &&
+								y >= 0 && y < canvas.height &&
+								isColorMatch(pixels, index, baseColor, color, fuzz)
+							) {
+								pixels[index] = newcolor.r;
+								pixels[index + 1] = newcolor.g;
+								pixels[index + 2] = newcolor.b;
+
+								stack.push({ x: x + 1, y: y });
+								stack.push({ x: x - 1, y: y });
+								stack.push({ x: x, y: y + 1 });
+								stack.push({ x: x, y: y - 1 });
+							}
 						}
+
+						ctx.putImageData(imageData, 0, 0);
+
+						ipcRenderer.send('replace-color', canvas.toDataURL())
+					};
+					img.src = object._originalElement.currentSrc
+				} else {
+					console.log("replace all color")
+					img.onload = function() {
+						const canvas = document.createElement('canvas');
+						const ctx = canvas.getContext('2d');
+
+						canvas.width = img.width;
+						canvas.height = img.height;
+
+						ctx.drawImage(img, 0, 0);
+
+						const pixelData = ctx.getImageData(x, y, 1, 1).data; // Get pixel data at coordinates (x, y)
+						const color = { r: pixelData[0], g: pixelData[1], b: pixelData[2] }; // Extract RGB values from pixel data
+
+						// Continue with your existing code...
+						const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+						const pixels = imageData.data;
+
+						for (let i = 0; i < pixels.length; i += 4) {
+							const r = pixels[i];
+							const g = pixels[i + 1];
+							const b = pixels[i + 2];
+							const a = pixels[i + 3];
+
+							if (isColorWithinTolerance({ r, g, b }, color, fuzz)) {
+								pixels[i] = newcolor.r;
+								pixels[i + 1] = newcolor.g;
+								pixels[i + 2] = newcolor.b;
+							}
+						}
+
+						ctx.putImageData(imageData, 0, 0);
+
+						ipcRenderer.send('replace-color', canvas.toDataURL())
+						return false;
 					}
-				})
+					img.src = object._originalElement.currentSrc;
+				}
 				return false;
 			}
 		}	
@@ -2074,44 +2235,7 @@
 				$("#colorSquare").removeClass("colorSquareActive").removeClass("colorSquareSelected");
 				var theImage = object._originalElement.currentSrc;	
 				theImage = theImage.substr(theImage.indexOf(',') + 1).toString();
-				$.ajax({
-					type: "POST",
-					url: "http://127.0.0.1:"+port+"/removeBorder",
-					data: {imgdata: theImage, x: "1", y: "1", action: "removeBorder", color: "null", newcolor: "null", fuzz: fuzz, filename: pictureName},
-					success: function(data) {
-						var imgObj = new Image();
-						imgObj.src = data;
-						imgObj.onload = function () {
-							var image = new fabric.Image(imgObj);
-							image.set({
-								originX: 'center',
-								originY: 'center',
-								left: imLeft,
-								top: imTop,
-								perPixelTargetFind: true,
-								centeredScaling: true,
-								centeredRotation: true,
-								name: pictureName
-							});
-							
-							image.resizeFilters.push(new fabric.Image.filters.Resize({
-								resizeType: 'lanczos',
-								lanczosLobes: 2
-							}));
-							
-							image.on('object:modified',function() {
-								imLeft = image.get('left')
-								imTop = image.get('top');
-							});
-							
-							logoCanvas.remove(object);
-							logoCanvas.add(image);
-							logoCanvas.renderAll();
-							imLeft = image.get('left')
-							imTop = image.get('top');
-						}
-					}
-				})
+				ipcRenderer.send('remove-border', {imgdata: theImage, x: "1", y: "1", action: "removeBorder", color: "null", newcolor: "null", fuzz: fuzz, filename: pictureName})
 				return false;
 			}
 		}	
@@ -2291,11 +2415,13 @@
 		})
 		if (state == true) {
 			$("#fontTypeCombo").prop("disabled",false);
+			$(".ms-dd").removeClass("disabled")
 			$(".textOption").each(function() {
 				$(this).prop( "disabled", false );
 			})
 		} else {
 			$("#fontTypeCombo").prop("disabled",true);
+			$(".ms-dd").addClass("disabled")
 			$(".textOption").each(function() {
 				$(this).prop( "disabled", true );
 			})
@@ -2339,191 +2465,158 @@
 	}
 
 	$("#loadCap").on("click",function(e) {
-		$.ajax({
-			type: "GET",
-			url: "http://127.0.0.1:"+port+"/uploadCap",
-			success: function(response) {
-				customFonts.splice(0, customFonts.length)
-				const data = JSON.parse(response)
-				customTextureBase = data.customTexture;
-				$("#teamName").val(data.team)
-				$("#startYear").val(data.start)
-				$("#endYear").val(data.end)
-				$("#capType").val(data.type)
-				$("#textureSelect").val(data.texture)
-				$("#makersMarkSelect").val(data.makersMark)
-				$("#makersMarkSide").val(data.makersMarkSide)
-				$("#makersMarkColor").spectrum("set", data.makersMarkFill)
-				if (data.customFonts.length > 0) {
-					for (x in data.customFonts) {
-						const loadedFont = data.customFonts[x]
-						validFonts.push(loadedFont.familyName)
-						$("head").prepend("<style>@font-face {\n   font-family: '"+loadedFont.familyName+"';\n   src: url('"+loadedFont.fontData+"') format('truetype');\n}\n."+loadedFont.familyName+" { font-family: '"+loadedFont.familyName+"'; font-size: 1.1em;}\n</style>");
-						fontSources[loadedFont.familyName] = loadedFont.fontData;
-						var style = loadedFont.familyName;
-						var font_family = $("."+style).css("font-family");
-						var optgroup = $("<optgroup class='"+loadedFont.familyName+"'>");
-						optgroup.append("<option value='"+loadedFont.familyName+"'>"+loadedFont.fontName+"</option>")
-						$("#fontTypeCombo").append(optgroup)
-						customFonts.push(loadedFont)
-					}	
-				}
-				const selectedFont = (validFonts.includes(data.selectedFont)) ? data.selectedFont : "Graduate";
-				var anyTextVisible = false;
-				textureFJS.clear();
-				logoCanvas.clear();
-				below.clear();
-				below.loadFromJSON(data.canvas.below, below.renderAll.bind(below), function(o, object) {
-					below.add(object)
-					$("#"+object.id).spectrum("set", object.fill)
-					if (object.visible) {
-						$("#"+object.id).spectrum('enable');
-					} else {
-						$("#"+object.id).spectrum('disable');
-					}
-					$("#"+object.id+"Check").prop("checked",object.visible)
-					
-				})
-				logoCanvas.loadFromJSON(data.canvas.logo, logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
-					$("#"+object.id+"Check").prop("checked",object.visible)
-					if (object.id == 'eyeletGroup') {
-						object.getObjects().forEach(function(o) {
-							$("#"+o.id).spectrum("set", o.fill)
-							if (o.visible) {
-								$("#"+o.id).spectrum('enable');
-							} else {
-								$("#"+o.id).spectrum('disable');
-							}
-						})
-					}
-					if (object.id == 'makersMark2') {
-						$("#makersMarkCheck").prop("checked",object.visible)
-					}
-					if (object.id == 'textLogo') {
-						$("#capText").val(object._objects[0].text)
-						$("#capLogoStroke2Color").spectrum("set",object._objects[0].fill)
-						$("#capLogoStroke1Color").spectrum("set",object._objects[1].fill)
-						$("#capLogoTextColor").spectrum("set",object._objects[2].fill)
-						if (object.visible) {
-							$("#capText").prop("disabled",false)
-							anyTextVisible = true;
-							$(".textToggle").each(function() {
-								$(this).prop("disabled",false);
-							}) 
-						} else {
-							$("#capText").prop("disabled",true)
-							$(".textToggle").each(function() {
-								$(this).prop("disabled",true);
-							}) 
-						}
-					}
-					if (object.id == 'textLogo2') {
-						$("#capText2").val(object._objects[0].text)
-						$("#capLogo2Stroke2Color").spectrum("set",object._objects[0].fill)
-						$("#capLogo2Stroke1Color").spectrum("set",object._objects[1].fill)
-						$("#capLogo2TextColor").spectrum("set",object._objects[2].fill)
-						if (object.visible) {
-							$("#capText2").prop("disabled",false)
-							anyTextVisible = true;
-							$(".text2Toggle").each(function() {
-								$(this).prop("disabled",false);
-							}) 
-						} else {
-							$("#capText").prop("disabled",true)
-							$(".text2Toggle").each(function() {
-								$(this).prop("disabled",true);
-							}) 
-						}
-					}
-					
-					logoCanvas.add(object)
-				})
-			
-				var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
-				g.getObjects().forEach(function(o) {
-					var myfont = new FontFaceObserver(data.selectedFont)
-					myfont.load()
-						.then(function() {
-							o.set({
-								"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
-							})
-							logoCanvas.renderAll();
-						}).catch(function(e) {
-							console.log(e)
-						});
-				})
-
-				var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
-				g.getObjects().forEach(function(o) {
-					var myfont = new FontFaceObserver(data.selectedFont)
-					myfont.load()
-						.then(function() {
-							o.set({
-								"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
-							})
-							logoCanvas.renderAll();
-						}).catch(function(e) {
-							console.log(e)
-						});
-				})
-				
-				below.renderAll()
-				$("#fontTypeCombo").val(selectedFont).trigger('change')
-
-				if (data.texture == "custom") {
-					$("#clearTexture").css("display","inline-block");
-					$("#textureSelect").val(null)
-					$("#textureSelect").trigger("change")	
-				} else {
-					$("#textureSelect").trigger("change")	
-				}
-				$("#textureSelect").val(data.texture)		
-				
-				if (anyTextVisible == true) {
-					$("#fontTypeCombo").prop("disabled",false);
-					$(".textOption").each(function() {
-						$(this).prop("disabled",false);
-					})
-				} else {
-					$("#fontTypeCombo").prop("disabled",true);
-					$(".textOption").each(function() {
-						$(this).prop("disabled",true);
-					})
-				}
-				reRenderBG()
-			}
-		});
+		ipcRenderer.send('upload-cap', null)
 	})
 
-	$("#imgur").on("click",function(e) {
-		$("#overlay").css("display","inline-block");
-		logoCanvas.setOverlayImage(null, logoCanvas.renderAll.bind(logoCanvas));
-		logoCanvas.deactivateAll().renderAll();
-		
-		var finalCanvas = document.getElementById('final');
-		var exportCtx = finalCanvas.getContext('2d');
-		exportCtx.clearRect(0,0,512,512);
-		exportCtx.drawImage(composite,0,0);
-		exportCtx.drawImage(can4,0,0);
-		
-		var finalImage = finalCanvas.toDataURL();
-		
-		logoCanvas.setOverlayImage('./images/guides.png', logoCanvas.renderAll.bind(logoCanvas));
-		
-		$.ajax({
-			url : 'http://127.0.0.1:'+port+'/imgur',
-			type : 'POST',
-			data : {imgdata:finalImage,watermark:'cm_watermark.png'},
-			dataType: "json",
-			success : function(result) {
-				$("#overlay").css("display","none");
-				if (result.success == true) {
-					prompt("Image uploaded successfully!\n\nTo get the link, simply copy the text below, and then click either button...\n\n",result.data.link);
+	ipcRenderer.on('upload-cap-response', (event, response) => {
+		customFonts.splice(0, customFonts.length)
+		const data = JSON.parse(response)
+		customTextureBase = data.customTexture;
+		$("#teamName").val(data.team)
+		$("#startYear").val(data.start)
+		$("#endYear").val(data.end)
+		$("#capType").val(data.type)
+		$("#textureSelect").val(data.texture)
+		$("#makersMarkSelect").val(data.makersMark)
+		$("#makersMarkSide").val(data.makersMarkSide)
+		$("#makersMarkColor").spectrum("set", data.makersMarkFill)
+		if (data.customFonts.length > 0) {
+			for (x in data.customFonts) {
+				const loadedFont = data.customFonts[x]
+				validFonts.push(loadedFont.familyName)
+				$("head").prepend("<style>@font-face {\n   font-family: '"+loadedFont.familyName+"';\n   src: url('"+loadedFont.fontData+"') format('truetype');\n}\n."+loadedFont.familyName+" { font-family: '"+loadedFont.familyName+"'; font-size: 1.1em;}\n</style>");
+				fontSources[loadedFont.familyName] = loadedFont.fontData;
+				var style = loadedFont.familyName;
+				var font_family = $("."+style).css("font-family");
+				var optgroup = $("<optgroup class='"+loadedFont.familyName+"'>");
+				optgroup.append("<option value='"+loadedFont.familyName+"'>"+loadedFont.fontName+"</option>")
+				$("#fontTypeCombo").append(optgroup)
+				customFonts.push(loadedFont)
+			}	
+		}
+		const selectedFont = (validFonts.includes(data.selectedFont)) ? data.selectedFont : "Graduate";
+		var anyTextVisible = false;
+		textureFJS.clear();
+		logoCanvas.clear();
+		below.clear();
+		below.loadFromJSON(data.canvas.below, below.renderAll.bind(below), function(o, object) {
+			below.add(object)
+			$("#"+object.id).spectrum("set", object.fill)
+			if (object.visible) {
+				$("#"+object.id).spectrum('enable');
+			} else {
+				$("#"+object.id).spectrum('disable');
+			}
+			$("#"+object.id+"Check").prop("checked",object.visible)
+			
+		})
+		logoCanvas.loadFromJSON(data.canvas.logo, logoCanvas.renderAll.bind(logoCanvas), function(o, object) {
+			$("#"+object.id+"Check").prop("checked",object.visible)
+			if (object.id == 'eyeletGroup') {
+				object.getObjects().forEach(function(o) {
+					$("#"+o.id).spectrum("set", o.fill)
+					if (o.visible) {
+						$("#"+o.id).spectrum('enable');
+					} else {
+						$("#"+o.id).spectrum('disable');
+					}
+				})
+			}
+			if (object.id == 'makersMark2') {
+				$("#makersMarkCheck").prop("checked",object.visible)
+			}
+			if (object.id == 'textLogo') {
+				$("#capText").val(object._objects[0].text)
+				$("#capLogoStroke2Color").spectrum("set",object._objects[0].fill)
+				$("#capLogoStroke1Color").spectrum("set",object._objects[1].fill)
+				$("#capLogoTextColor").spectrum("set",object._objects[2].fill)
+				if (object.visible) {
+					$("#capText").prop("disabled",false)
+					anyTextVisible = true;
+					$(".textToggle").each(function() {
+						$(this).prop("disabled",false);
+					}) 
 				} else {
-					alert(result.error);
+					$("#capText").prop("disabled",true)
+					$(".textToggle").each(function() {
+						$(this).prop("disabled",true);
+					}) 
 				}
 			}
+			if (object.id == 'textLogo2') {
+				$("#capText2").val(object._objects[0].text)
+				$("#capLogo2Stroke2Color").spectrum("set",object._objects[0].fill)
+				$("#capLogo2Stroke1Color").spectrum("set",object._objects[1].fill)
+				$("#capLogo2TextColor").spectrum("set",object._objects[2].fill)
+				if (object.visible) {
+					$("#capText2").prop("disabled",false)
+					anyTextVisible = true;
+					$(".text2Toggle").each(function() {
+						$(this).prop("disabled",false);
+					}) 
+				} else {
+					$("#capText").prop("disabled",true)
+					$(".text2Toggle").each(function() {
+						$(this).prop("disabled",true);
+					}) 
+				}
+			}
+			
+			logoCanvas.add(object)
 		})
+	
+		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo');
+		g.getObjects().forEach(function(o) {
+			var myfont = new FontFaceObserver(data.selectedFont)
+			myfont.load()
+				.then(function() {
+					o.set({
+						"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
+					})
+					logoCanvas.renderAll();
+				}).catch(function(e) {
+					console.log(e)
+				});
+		})
+
+		var g = logoCanvas.getObjects().find(o => o.id === 'textLogo2');
+		g.getObjects().forEach(function(o) {
+			var myfont = new FontFaceObserver(data.selectedFont)
+			myfont.load()
+				.then(function() {
+					o.set({
+						"fontFamily": validFonts.includes(data.selectedFont) ? o.fontFamily : "Graduate"
+					})
+					logoCanvas.renderAll();
+				}).catch(function(e) {
+					console.log(e)
+				});
+		})
+		
+		below.renderAll()
+		$("#fontTypeCombo").val(selectedFont).trigger('change')
+
+		if (data.texture == "custom") {
+			$("#clearTexture").css("display","inline-block");
+			$("#textureSelect").val(null)
+			$("#textureSelect").trigger("change")	
+		} else {
+			$("#textureSelect").trigger("change")	
+		}
+		$("#textureSelect").val(data.texture)		
+		
+		if (anyTextVisible == true) {
+			$("#fontTypeCombo").prop("disabled",false);
+			$(".textOption").each(function() {
+				$(this).prop("disabled",false);
+			})
+		} else {
+			$("#fontTypeCombo").prop("disabled",true);
+			$(".textOption").each(function() {
+				$(this).prop("disabled",true);
+			})
+		}
+		reRenderBG()
 	})
 	
 	function getObjectById(canvas,object) {
@@ -2552,39 +2645,166 @@
 	})
 
 	$("#uploadTheFont").on("click", function(e) {
-		$.ajax({
+		ipcRenderer.send('custom-font', null)
+/* 		$.ajax({
 			type: "GET",
 			url: "http://127.0.0.1:"+port+"/customFont",
 			success: function(data) {
-				customFonts.push(data)
-				$("head").prepend("<style>@font-face {\n   font-family: '"+data.familyName+"';\n   src: url('"+data.fontData+"') format('truetype');\n}\n."+data.familyName+" { font-family: '"+data.familyName+"'; font-size: 1.1em;}\n</style>");
-				var style = data.familyName;
-				var font_family = $("."+style).css("font-family");
-				var objects = logoCanvas.getObjects("group");
-				var myfont = new FontFaceObserver(data.familyName)
-				myfont.load().then(function() {
-						for (x in objects) {
-						if (objects[x].id == "wordmark") {
-							var tmp = objects[x].getObjects();
-							for (i in tmp) {
-								tmp[i].fontFamily = data.familyName;
-							}
-						}
-					}
-					logoCanvas.renderAll();
-					var optgroup = $("<optgroup class='"+data.familyName+"'>");
-					optgroup.append("<option value='"+data.familyName+"'>"+data.fontName+"</option>")
-					$("#fontTypeCombo").append(optgroup)
-					$("#fontTypeCombo").children().remove("optgroup[class='alegreya']");
-					$("#fontTypeCombo").val(data.familyName)
-					$("#fontTypeCombo").removeClass().addClass(data.familyName);
-					$("#fontTypeCombo").change()
-				}).catch(function(e) {
-					console.log(e)
-					alert('font loading failed ' + data.familyName);
-				});
+				
 			}
-		})
+		}) */
 	})
+
+	/* ipcRenderer.on('custom-font-response', (event, data) => {
+		customFonts.push(data)
+		$("head").prepend("<style>@font-face {\n   font-family: '"+data.familyName+"';\n   src: url('"+data.fontData+"') format('truetype');\n}\n."+data.familyName+" { font-family: '"+data.familyName+"'; font-size: 1.1em;}\n</style>");
+		var style = data.familyName;
+		var font_family = $("."+style).css("font-family");
+		var objects = logoCanvas.getObjects("group");
+		var myfont = new FontFaceObserver(data.familyName)
+		myfont.load().then(function() {
+				for (x in objects) {
+				if (objects[x].id == "wordmark") {
+					var tmp = objects[x].getObjects();
+					for (i in tmp) {
+						tmp[i].fontFamily = data.familyName;
+					}
+				}
+			}
+			logoCanvas.renderAll();
+			var optgroup = $("<optgroup class='"+data.familyName+"'>");
+			optgroup.append("<option value='"+data.familyName+"'>"+data.fontName+"</option>")
+			$("#fontTypeCombo").append(optgroup)
+			$("#fontTypeCombo").children().remove("optgroup[class='alegreya']");
+			$("#fontTypeCombo").val(data.familyName)
+			$("#fontTypeCombo").removeClass().addClass(data.familyName);
+			$("#fontTypeCombo").change()
+		}).catch(function(e) {
+			console.log(e)
+			alert('font loading failed ' + data.familyName);
+		});
+	}) */
+
+	ipcRenderer.on('custom-font-response', (event, data) => {
+		wordmarkChange(data,true)
+	})
+
+	ipcRenderer.on('local-font-folder-response', (event, data) => {
+		let fontErrors = []
+		if (data.result == 'success') {
+			const dropdown = document.getElementById("fontTypeCombo").msDropdown;
+
+			for (result of data.fonts) {
+				if (result.status == "ok") {
+					fontList.push(result.fontName)
+					var thumb = null;
+					const name = result.fontName
+					const value = result.fontPath
+					opentype.load(result.fontPath, (err,font) => {
+						if (err || !font) {
+							log.error(err)
+							return;
+						}
+						
+						var thumbText = font.getPath("ABC 123", 0, 0, 96)
+						var outPath = thumbText.toPathData(5)
+
+						thumbText = new fabric.Path(outPath, {
+							left: 0,
+							originX: 'center',
+							originY: 'center',
+							centeredScaling: true,
+							centeredRotation: true,
+							fill: 'black',
+							height: '80px'
+						})
+
+						thumb = thumbText.toDataURL()
+
+						if (findIndexByText(dropdown, name) == -1) {
+							dropdown.add({text:name, value:value, image:thumb},0)
+						}
+
+						const selectedFont = $("#fontTypeCombo").val()
+						$("#fontTypeCombo").html($('#fontTypeCombo option').sort(function(x, y) {
+							return $(x).text().toLowerCase() < $(y).text().toLowerCase() ? -1 : 1;
+						}))
+						$("#fontTypeCombo").val(selectedFont)
+						
+					})
+				} else {
+					fontErrors.push(result.fontName)
+				}
+				
+			}
+		}
+		//hideOverlay()
+		if (fontErrors.length > 0) {
+			var message = "The following fonts failed to import, and have been removed from your user fonts folder:\r\n\r\n"
+			for (font of fontErrors) {
+				message += font+"\r\n"
+			}
+			alert(message)
+			//ipcRenderer.send('show-alert',message)
+		}
+	})
+
+function isColorWithinTolerance(pixelColor, targetColor, tolerance) {
+	const dr = Math.abs(pixelColor.r - targetColor.r);
+	const dg = Math.abs(pixelColor.g - targetColor.g);
+	const db = Math.abs(pixelColor.b - targetColor.b);
+
+	return (dr <= tolerance && dg <= tolerance && db <= tolerance);
+}
+
+function isColorMatch(pixels, index, baseColor, targetColor, tolerance) {
+	const dr = Math.abs(baseColor.r - pixels[index]);
+	const dg = Math.abs(baseColor.g - pixels[index + 1]);
+	const db = Math.abs(baseColor.b - pixels[index + 2]);
+
+	return (dr + dg + db) / 3 <= tolerance;
+}
+
+function isColorMatchAlpha(pixels, index, baseColor, targetColor, tolerance) {
+	const dr = Math.abs(baseColor.r - pixels[index]);
+	const dg = Math.abs(baseColor.g - pixels[index + 1]);
+	const db = Math.abs(baseColor.b - pixels[index + 2]);
+	const da = Math.abs(baseColor.a - pixels[index + 3]); // Include alpha channel difference
+
+	return (dr + dg + db + da) / 4 <= tolerance
+}
+
+function hexToRgb(hex) {
+	// Remove '#' if present
+	hex = hex.replace(/^#/, '');
+
+	// Parse hex values
+	const bigint = parseInt(hex, 16);
+
+	// Extract RGB components
+	const r = (bigint >> 16) & 255;
+	const g = (bigint >> 8) & 255;
+	const b = bigint & 255;
+
+	return { r, g, b };
+}
+
+function findIndexByText(dropdown, text) {
+		for (child of dropdown.children) {
+			if (child.text == text) {
+				return child.index
+			}
+		}
+		return -1
+	}
+
+	function findIndexByValue(dropdown, value) {
+		for (child of dropdown.children) {
+			if (child.value == value) {
+				return child.index
+			}
+		}
+		return -1
+	}
 </script>
 </html>

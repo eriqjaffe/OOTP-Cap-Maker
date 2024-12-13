@@ -1,7 +1,7 @@
 {
   "name": "capmaker",
   "productName": "OOTP Cap Maker",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "OOTP Cap Maker",
   "main": "main.js",
   "scripts": {
@@ -19,24 +19,18 @@
     "archiver": "^5.3.0",
     "body-parser": "^1.19.2",
     "electron-store": "^8.0.1",
-    "express": "^4.17.3",
-    "imagemagick-cli": "^0.5.0",
-    "jimp": "^0.16.1",
-    "node-font2base64": "^0.7.1",
-    "promise-synchronizer": "1.1.8",
-    "ttfinfo": "^0.2.0"
+    "fontname": "^1.0.1",
+    "jimp": "^0.16.1"
   },
-  "packageManager": "yarn@3.1.0",
   "devDependencies": {
-    "electron": "^17.1.0",
-    "electron-builder": "^22.14.13"
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
   },
   "build": {
     "appId": "com.ootputilities.capmakermul",
     "mac": {
       "category": "public.app-category.utilities",
       "target": [
-        "zip",
         "dmg"
       ]
     },
@@ -65,10 +59,10 @@
     "linux": {
       "target": [
         "deb",
-        "rpm",
-        "tar.gz"
+        "rpm"
       ]
     },
     "deb": {}
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

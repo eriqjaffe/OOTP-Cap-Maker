@@ -1,45 +1,40 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, Menu, shell, webContents  } = require('electron')
+const { app, BrowserWindow, dialog, Menu, shell, webContents, ipcMain } = require('electron')
 const path = require('path')
-const express = require('express');
 const Jimp = require('jimp');
-const imagemagickCli = require('imagemagick-cli');
-//const imgur = require('imgur');
 const os = require('os');
 const tempDir = os.tmpdir()
 const fs = require('fs')
-const app2 = express();
-const ttfInfo = require('ttfinfo');
 const url = require('url');
 const isMac = process.platform === 'darwin'
 const archiver = require('archiver')
-const font2base64 = require("node-font2base64")
+//const font2base64 = require("node-font2base64")
 const Store = require("electron-store")
-
-const server = app2.listen(0, () => {
-	console.log(`Server running on port ${server.address().port}`);
-});
+const fontname = require('fontname')
 
 const store = new Store();
 
 const preferredColorFormat = store.get("preferredColorFormat", "hex")
 const preferredTexture = store.get("preferredTexture", "texture")
+const userFontsFolder = path.join(app.getPath('userData'),"fonts")
+if (!fs.existsSync(userFontsFolder)) {
+    fs.mkdirSync(userFontsFolder);
+}
 
-app2.use(express.urlencoded({limit: '50mb', extended: true, parameterLimit: 50000}));
-
-app2.get("/uploadCap", (req, res) => {
+ipcMain.on('upload-cap', (event, arg) => {
 	const file = dialog.showOpenDialogSync(null, {
 		properties: ['openFile'],
 		filters: [
 			{ name: 'Ballcap Files', extensions: ['cap'] }
 		]
 	})
-	res.end(JSON.stringify(JSON.parse(fs.readFileSync(file[0]).toString())))
+	event.sender.send('upload-cap-response', JSON.stringify(JSON.parse(fs.readFileSync(file[0]).toString())))
 })
 
-app2.get("/uploadImage", (req, res) => {
+ipcMain.on("upload-image", (event, arg) => {
+	let json = {}
 	dialog.showOpenDialog(null, {
 		properties: ['openFile'],
 		filters: [
@@ -47,18 +42,14 @@ app2.get("/uploadImage", (req, res) => {
 		]
 	  }).then(result => {
 		  if(!result.canceled) {
-			//console.log(result.filePaths)
 			Jimp.read(result.filePaths[0], (err, image) => {
 				if (err) {
 					console.log(err);
 				} else {
 					image.getBase64(Jimp.AUTO, (err, ret) => {
-						//console.log(ret);
-						//res.json({
-						//	"filename": "hello world",
-						//	"image": res
-						//  });
-						res.end(ret);
+						json.filename = path.basename(result.filePaths[0])
+						json.image = ret
+						event.sender.send('upload-image-response', json);
 					})
 				}
 			});
@@ -68,82 +59,48 @@ app2.get("/uploadImage", (req, res) => {
 	  })
 })
 
-/* app2.post("/imgur", (req, res)  => {
-	imgur.setClientId('c9ff708b19a4996');
-	imgur.setAPIUrl('https://api.imgur.com/3/');
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	Jimp.read(buffer, (err, fir_img) => {
-			if(err) {
-				console.log(err);
-			} else {
-					Jimp.read('./images/cm_watermark.png', (err, sec_img) => {
-						if(err) {
-							console.log(err);
-						} else {
-							fir_img.composite(sec_img, 0, 0);
-							fir_img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-								var finalImage = Buffer.from(buffer).toString('base64');
-								//new Promise((resolve, reject) => {
-									imgur
-										.uploadBase64(finalImage.replace(/^data:image\/(png|gif|jpeg);base64,/,''))
-										.then((json) => {
-											console.log(json.link);
-											return json.link;
-										})
-										.catch((err) => {
-											console.error(err.message);
-										});
-									})
-							  //});
-							
-						}
-					})
-				}
-			});
-}) */
+ipcMain.on('save-cap', (event, arg) => {
+	const buffer = Buffer.from(arg.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+	const json = Buffer.from(arg.canvas, 'utf-8')
 
-app2.post('/savecap', (req, res) => {
-	const buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	const json = Buffer.from(req.body.canvas, 'utf-8')
-
-	const output = fs.createWriteStream(tempDir + '/'+req.body.name+'.zip');
+	const output = fs.createWriteStream(tempDir + '/'+arg.name+'.zip');
 
 	output.on('close', function() {
-		var data = fs.readFileSync(tempDir + '/'+req.body.name+'.zip');
+		var data = fs.readFileSync(tempDir + '/'+arg.name+'.zip');
 		var saveOptions = {
-		  defaultPath: app.getPath('downloads') + '/' + req.body.name+'.zip',
+			defaultPath: app.getPath('downloads') + '/' + arg.name+'.zip',
 		}
 		dialog.showSaveDialog(null, saveOptions).then((result) => { 
-		  if (!result.canceled) {
+			if (!result.canceled) {
 			fs.writeFile(result.filePath, data, function(err) {
-			  if (err) {
-				res.end("success")
-				fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
-				  if (err) {
+				if (err) {
+				//res.end("success")
+				fs.unlink(tempDir + '/'+arg.name+'.zip', (err) => {
+					if (err) {
 					console.error(err)
 					return
-				  }
+					}
 				})
-				res.end("success")
-			  } else {
-				fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
-				  if (err) {
+				//res.end("success")
+				} else {
+				fs.unlink(tempDir + '/'+arg.name+'.zip', (err) => {
+					if (err) {
 					console.error(err)
 					return
-				  }
+					}
 				})
-				res.end("success")
-			  };
+				//res.end("success")
+				};
 			})
-		  } else {
-			fs.unlink(tempDir + '/'+req.body.name+'.zip', (err) => {
-			  if (err) {
+			} else {
+			fs.unlink(tempDir + '/'+arg.name+'.zip', (err) => {
+				if (err) {
 				console.error(err)
 				return
-			  }
+				}
 			})
-			res.end("success");
-		  }
+			//res.end("success");
+			}
 		})
 	});
 
@@ -170,8 +127,8 @@ app2.post('/savecap', (req, res) => {
 						fir_img.composite(sec_img, 0, 0);
 						fir_img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
 							const finalImage = Buffer.from(buffer);
-							archive.append(finalImage, {name: req.body.name+".png"})
-							archive.append(json, {name: req.body.name+".cap"})
+							archive.append(finalImage, {name: arg.name+".png"})
+							archive.append(json, {name: arg.name+".cap"})
 							archive.finalize()
 							});
 						
@@ -181,119 +138,36 @@ app2.post('/savecap', (req, res) => {
 		}); 
 });
 
-app2.post("/removeBorder", (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var fuzz = parseInt(req.body.fuzz);
+ipcMain.on('remove-border', (event, arg) => {
+	var buffer = Buffer.from(arg.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+	var fuzz = parseInt(arg.fuzz);
 	Jimp.read(buffer, (err, image) => {
 		if (err) {
 			console.log(err);
 		} else {
-			image.write(tempDir + '/temp.png');
-			imagemagickCli.exec('magick convert -trim -fuzz '+fuzz+'% '+tempDir+'/temp.png '+tempDir+'/temp.png').then(({ stdout, stderr }) => {
-				Jimp.read(tempDir + '/temp.png', (err, image) => {
-					if (err) {
-						console.log(err);
-					} else {
-						image.getBase64(Jimp.AUTO, (err, ret) => {
-							res.end(ret);
-						})
-					}
-				})
+			image.autocrop()
+			image.getBase64(Jimp.AUTO, (err, ret) => {
+				event.sender.send('imagemagick-response', ret)
 			})
 		}
 	})
 })
 
-app2.post("/replaceColor", (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var x = parseInt(req.body.x);
-	var y = parseInt(req.body.y);
-	var color = req.body.color;
-	var newcolor = req.body.newcolor;
-	var action = req.body.action;
-	var fuzz = parseInt(req.body.fuzz);
-	var cmdString;
+ipcMain.on('replace-color', (event, arg) => {	
+	var buffer = Buffer.from(arg.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
 	Jimp.read(buffer, (err, image) => {
 		if (err) {
 			console.log(err);
 		} else {
-			image.write(tempDir + '/temp.png');
-			if (action == "replaceColorRange") {
-				cmdString = 'magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -fill '+newcolor+' -draw "color '+x+','+y+' floodfill" '+tempDir+'/temp.png';		
-			} else {
-				cmdString = 'magick convert '+tempDir+'/temp.png -fuzz 50% -fill '+newcolor+' -opaque '+color+' '+tempDir+'/temp.png';	
-			}
-			imagemagickCli.exec(cmdString).then(({ stdout, stderr }) => {
-				Jimp.read(tempDir + '/temp.png', (err, image) => {
-					if (err) {
-						console.log(err);
-					} else {
-						image.getBase64(Jimp.AUTO, (err, ret) => {
-							res.end(ret);
-						})
-					}
-				})
+			image.getBase64(Jimp.AUTO, (err, ret) => {
+				event.sender.send('imagemagick-response', ret)
 			})
 		}
 	})
 })
 
-app2.post("/removeColorRange", (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var x = parseInt(req.body.x);
-	var y = parseInt(req.body.y);
-	var fuzz = parseInt(req.body.fuzz);
-	Jimp.read(buffer, (err, image) => {
-		if (err) {
-			console.log(err);
-		} else {
-			image.write(tempDir + '/temp.png', (err) => {
-				imagemagickCli.exec('magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -fill none -draw "color '+x+','+y+' floodfill" '+tempDir+'/temp.png').then(({ stdout, stderr }) => {
-					Jimp.read(tempDir + '/temp.png', (err, image) => {
-						if (err) {
-							console.log(err);
-						} else {
-							image.getBase64(Jimp.AUTO, (err, ret) => {
-								res.end(ret);
-							})
-						}
-					})
-				})
-			})
-		}
- 	})
-})
-
-app2.post('/removeAllColor', (req, res) => {
-	var buffer = Buffer.from(req.body.imgdata.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-	var x = parseInt(req.body.x);
-	var y = parseInt(req.body.y);
-	var color = req.body.color;
-	var fuzz = parseInt(req.body.fuzz);
-	Jimp.read(buffer, (err, image) => {
-		if (err) {
-			console.log(err);		
-		} else {
-			image.write(tempDir + '/temp.png', (err) => {
-				var cmdString = 'magick convert '+tempDir+'/temp.png -fuzz '+fuzz+'% -transparent '+color+' '+tempDir+'/temp.png';
-				console.log(cmdString);
-				imagemagickCli.exec(cmdString).then(({ stdout, stderr }) => {
-					Jimp.read(tempDir + '/temp.png', (err, image) => {
-						if (err) {
-							console.log(err);
-						} else {
-							image.getBase64(Jimp.AUTO, (err, ret) => {
-								res.end(ret);
-							})
-						}
-					})
-				})
-			})
-		}
-	})
-});
-
-app2.get("/customFont", (req, res) => {
+/* ipcMain.on("custom-font", (event, arg) => {
+	let json = {}
 	dialog.showOpenDialog(null, {
 		properties: ['openFile'],
 		filters: [
@@ -303,22 +177,20 @@ app2.get("/customFont", (req, res) => {
 		if(!result.canceled) {
 			ttfInfo(result.filePaths[0], function(err, info) {
 			var ext = getExtension(result.filePaths[0])
-				const dataUrl = font2base64.encodeToDataUrlSync(result.filePaths[0])
+				const dataUrl = ""
 				var fontPath = url.pathToFileURL(tempDir + '/'+path.basename(result.filePaths[0]))
 				fs.copyFile(result.filePaths[0], tempDir + '/'+path.basename(result.filePaths[0]), (err) => {
 					if (err) {
 						console.log(err)
 					} else {
-						res.json({
-							"fontName": info.tables.name[1],
-							"fontStyle": info.tables.name[2],
-							"familyName": info.tables.name[6],
-							"fontFormat": ext,
-							"fontMimetype": 'font/' + ext,
-							"fontData": fontPath.href,
-							"fontBase64": dataUrl
-						});
-						res.end()
+						json.fontName = info.tables.name[1],
+						json.fontStyle = info.tables.name[2],
+						json.familyName = info.tables.name[6],
+						json.fontFormat = ext,
+						json.fontMimetype = 'font/' + ext,
+						json.fontData = fontPath.href,
+						json.fontBase64 = dataUrl
+						event.sender.send('custom-font-response', json)
 					}
 				})
 			});
@@ -326,13 +198,100 @@ app2.get("/customFont", (req, res) => {
 	}).catch(err => {
 		console.log(err)
 	})
+}) */
+
+ipcMain.on('custom-font', (event, arg) => {
+	let json = {}
+	const options = {
+		defaultPath: store.get("uploadFontPath", app.getPath('desktop')),
+		properties: ['openFile'],
+		filters: [
+			{ name: 'Fonts', extensions: ['ttf', 'otf'] }
+		]
+	}
+	dialog.showOpenDialog(null, options).then(result => {
+		if(!result.canceled) {
+			store.set("uploadFontPath", path.dirname(result.filePaths[0]))
+			const filePath = path.join(userFontsFolder,path.basename(result.filePaths[0]))
+			try {
+				const fontMeta = fontname.parse(fs.readFileSync(result.filePaths[0]))[0];
+				var ext = getExtension(result.filePaths[0])
+				var fontPath = url.pathToFileURL(result.filePaths[0])
+				json.status = "ok"
+				json.fontName = fontMeta.fullName
+				json.fontStyle = fontMeta.fontSubfamily
+				json.familyName = fontMeta.fontFamily
+				json.fontFormat = ext
+				json.fontMimetype = 'font/' + ext
+				json.fontData = fontPath.href
+				json.fontPath = filePath
+				fs.copyFileSync(result.filePaths[0], filePath)
+				event.sender.send('custom-font-response', json)
+			} catch (err) {
+				json.status = "error"
+				json.fontName = path.basename(result.filePaths[0])
+				json.fontPath = result.filePaths[0]
+				json.message = err
+				event.sender.send('custom-font-response', json)
+				fs.unlinkSync(result.filePaths[0])
+			}
+		} else {
+			json.status = "cancelled"
+			event.sender.send('custom-font-response', json)
+			log.info("User cancelled custom font dialog")
+		}
+	}).catch(err => {
+		console.log(err)
+		json.status = "error",
+		json.message = err
+		event.sender.send('custom-font-response', json)
+	})
 })
 
-app2.post('/setPreference', (req, res) => {
-	const pref = req.body.pref;
-	const val = req.body.val;
+ipcMain.on('local-font-folder', (event, arg) => {
+	const jsonObj = {}
+	const jsonArr = []
+
+	filenames = fs.readdirSync(userFontsFolder);
+	for (i=0; i<filenames.length; i++) {
+		if (path.extname(filenames[i]).toLowerCase() == ".ttf" || path.extname(filenames[i]).toLowerCase() == ".otf") {
+			const filePath = path.join(userFontsFolder,filenames[i])
+			try {
+				const fontMeta = fontname.parse(fs.readFileSync(filePath))[0];
+				var ext = getExtension(filePath)
+				var fontPath = url.pathToFileURL(filePath)
+				var json = {
+					"status": "ok",
+					"fontName": fontMeta.fullName,
+					"fontStyle": fontMeta.fontSubfamily,
+					"familyName": fontMeta.fontFamily,
+					"fontFormat": ext,
+					"fontMimetype": 'font/' + ext,
+					"fontData": fontPath.href,
+					"fontPath": filePath,
+				};
+				jsonArr.push(json)
+			} catch (err) {
+				const json = {
+					"status": "error",
+					"fontName": path.basename(filePath),
+					"fontPath": filePath,
+					"message": err
+				}
+				jsonArr.push(json)
+				fs.unlinkSync(filePath)
+			}
+		}
+	}
+	jsonObj.result = "success"
+	jsonObj.fonts = jsonArr
+	event.sender.send('local-font-folder-response', jsonObj)
+})
+
+ipcMain.on('set-preference', (event, arg) => {
+	const pref = arg.pref;
+	const val = arg.val;
 	store.set(pref, val)
-	res.end()
 });
 
 function getExtension(filename) {
@@ -436,7 +395,7 @@ function createWindow () {
 	const menu = Menu.buildFromTemplate(template)
 	Menu.setApplicationMenu(menu)
 
-  mainWindow.loadURL(`file://${__dirname}/index.html?port=${server.address().port}&preferredColorFormat=${preferredColorFormat}&preferredTexture=${preferredTexture}`);
+  mainWindow.loadURL(`file://${__dirname}/index.html?preferredColorFormat=${preferredColorFormat}&preferredTexture=${preferredTexture}`);
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
 	shell.openExternal(url);
